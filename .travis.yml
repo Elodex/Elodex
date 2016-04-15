@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - '5.6'
+  - '7.0'
+
+services:
+  - elasticsearch
+
+before_script:
+  - travis_retry composer install --no-interaction
+  - sleep 10
+
+script: phpunit
+
+notifications:
+  on_success: never
+  on_failure: always
