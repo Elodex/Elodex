@@ -1,22 +1,37 @@
 # Elodex - **Elo**quent In**dex**ing Library
------
+
+[![Latest Stable Version](https://poser.pugx.org/elodex/elodex/v/stable)](https://packagist.org/packages/elodex/elodex)
+[![Build Status Master-Branch](https://travis-ci.org/Elodex/Elodex.svg?branch=master)](https://travis-ci.org/Elodex/Elodex)
+[![Total Downloads](https://poser.pugx.org/elodex/elodex/downloads)](https://packagist.org/packages/elodex/elodex)
+[![License](https://poser.pugx.org/elodex/elodex/license)](https://packagist.org/packages/elodex/elodex)
+
+Development branch: [![Build Status Develop-Branch](https://travis-ci.org/Elodex/Elodex.svg?branch=develop)](https://travis-ci.org/Elodex/Elodex)
 
 _Elodex_ provides an easy way to implement synchronization of your [Laravel Eloquent][Laravel Eloquent] models with an [Elasticsearch][Elasticsearch] index.
 
 Your Eloquent database will remain your main data source while you can use the full capacity of Elasticsearch for any index based search on your models.
 
+
 ## Requirements
------
-Elodex requires Elasticsearch 2.0 or higher, PHP v5.5.9+ and Laravel 5.1+. Note that Laravel versions beyond 5.2 are currently not supported even though they might work.
+
+Elodex requires Elasticsearch 2.0 or higher, PHP v5.6+ and Laravel 5.1+. Note that Laravel versions beyond 5.2 are currently not supported even though they might work.
 
 Besides the technical requirements you should have a profound knowledge of Eloquent and you should be familiar with the basic [Elasticsearch terms][Elasticsearch terms] and how Elasticsearch works in general.
 
 
+## Branching Model
+
+This project uses the [Gitflow branching model][gitflow]:
+- the **master** branch contains the latest **stable** version
+- the **develop** branch contains the latest **unstable** development version
+- all stable versions are tagged using semantic versioning
+
+
 ## Installation
------
+
 Elodex can be directly added to your project via Composer:
 ```bash
-composer require "elodex/elodex=^0.9"
+$ composer require "elodex/elodex=^0.9"
 ```
 Or you can manually add the required entry to your composer.json file in the `require` section :
 ```json
@@ -27,7 +42,7 @@ Or you can manually add the required entry to your composer.json file in the `re
 
 
 ## Laravel Integration
------
+
 To integrate Elodex into your Laravel application you first need to add the `IndexServiceProvider` to the list of service providers in the application configuration.
 
 This can be done by editing the `app.php` file in the `config` folder. Search for the `providers` section and add a new entry:
@@ -48,7 +63,7 @@ This can be done by editing the `app.php` file in the `config` folder. Search fo
 Even though Elodex does ship with a default configuration which should work for standard Elasticsearch installations you usually want to specify your own settings.
 You can do so by publishing the standard config file to your application:
 ```bash
-php artisan vendor:publish --provider="Elodex\IndexServiceProvider"
+$ php artisan vendor:publish --provider="Elodex\IndexServiceProvider"
 ```
 This will copy a standard config to ``config/elodex.php``. Make sure your Elasticsearch host configuration is correct and that you specify a default index name for your application which will be used for all your indexed Eloquent models by default.
 ```php
@@ -114,7 +129,7 @@ class Model extends ElodexModel
 
 
 ## Index Management
------
+
 General index management is available through the `IndexManager` class. You can either use dependency injection or access the `elodex.index` application singleton.
 ```php
 app('elodex.index')->createIndex();
@@ -135,7 +150,7 @@ Before you can start synchronizing your indexed model classes with Elasticsearch
 You usually create your index on your server while your app is in maintenance mode or during deployments.
 Elodex includes a basic Artisan command for that.
 ```bash
-php artisan es:create-index
+$ php artisan es:create-index
 ```
 Note that the command will fail if the index you specify already exists. To force the creation even if the index already exists use the `--force` parameter.
 You can use the `--help` parameter to get a full list of all available parameters.
@@ -193,7 +208,7 @@ If you decide not to use the command line to create your indices you can make us
 ### Deleting Indices
 Elodex provides an Artisan command to delete any existing index.
 ```bash
-php artisan es:delete-index
+$ php artisan es:delete-index
 ```
 
 Inside your application the `deleteIndex` method of the `IndexManager` class will basically do the same.
@@ -308,7 +323,7 @@ If a related model doesn't implement the interface a fallback to the standard se
 
 
 ## Index Repositories
------
+
 All indexed model documents are managed in a repository with the type `IndexRepository`. Each model class has its own default index repository using its own type in the index.
 
 This means you can't share an index repository with different model classes, trying to do so will result in exceptions during runtime.
@@ -389,7 +404,7 @@ Elasticsearch will always internally perform a full document update anyways.
 
 
 ## Index Search
------
+
 Indexed model classes provide a simple method to search for indexed documents of their type without having to directly access the corresponding index repository.
 ```php
 $results = User::indexSearch()->get();
@@ -483,7 +498,7 @@ You should be aware of the [pagination limitations][Elasticsearch pagination] th
 
 
 ## Index Synchronization
------
+
 Once you've filled your index repositories with your existing Eloquent models you usually want to keep your index in sync with your database.
 
 This can be easily achieved by adding an [event subscriber][Laravel Event Subscribers] for all relevant Eloquent events.
@@ -576,7 +591,13 @@ So let's say you've got 1000 comments which belong to 1 user, that would mean 10
 That's something you should keep in mind if you decide to use relationships in indices.
 
 
+## License
 
+Elodex is an open source project licensed under the the [MIT license](http://opensource.org/licenses/MIT).
+Please see [License File](LICENSE.txt) for further information.
+
+
+[gitflow]: http://nvie.com/posts/a-successful-git-branching-model/ "Gitflow Branching model"
 [Laravel Eloquent]: https://laravel.com/docs/5.2/eloquent "Laravel Eloquent"
 [Laravel Artisan]: https://laravel.com/docs/5.2/artisan "Laravel Artisan"
 [Laravel Event Subscribers]: https://laravel.com/docs/5.2/events#event-subscribers "Laravel Event Subscribers"
