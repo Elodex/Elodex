@@ -2,6 +2,7 @@
 
 [![Latest Stable Version](https://poser.pugx.org/elodex/elodex/v/stable)](https://packagist.org/packages/elodex/elodex)
 [![Build Status Master-Branch](https://travis-ci.org/Elodex/Elodex.svg?branch=master)](https://travis-ci.org/Elodex/Elodex)
+[![StyleCI](https://styleci.io/repos/56262906/shield)](https://styleci.io/repos/56262906)
 [![Total Downloads](https://poser.pugx.org/elodex/elodex/downloads)](https://packagist.org/packages/elodex/elodex)
 [![License](https://poser.pugx.org/elodex/elodex/license)](https://packagist.org/packages/elodex/elodex)
 
