@@ -47,6 +47,4 @@ interface IndexManagement
      * @return array
      */
     public static function putIndexMappings($indexName = null);
-
 }
-

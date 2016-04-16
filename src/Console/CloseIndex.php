@@ -56,4 +56,3 @@ class CloseIndex extends Command
         $this->info("Index '{$indexName}' successfully closed.");
     }
 }
-

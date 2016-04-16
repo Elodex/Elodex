@@ -128,5 +128,4 @@ class GetMappings extends Command
 
         $this->table($headers, $rows);
     }
-
 }

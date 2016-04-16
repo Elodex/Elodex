@@ -59,5 +59,4 @@ class DeleteIndex extends Command
             $this->info("Index '{$indexName}' successfully deleted.");
         }
     }
-
 }
