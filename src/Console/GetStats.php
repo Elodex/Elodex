@@ -99,5 +99,4 @@ class GetStats extends Command
 
         $this->line('');
     }
-
 }

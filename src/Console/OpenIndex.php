@@ -56,4 +56,3 @@ class OpenIndex extends Command
         $this->info("Index '{$indexName}' successfully opened.");
     }
 }
-

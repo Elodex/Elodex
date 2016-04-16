@@ -11,4 +11,3 @@ interface IndexedDocument
      */
     public function toIndexDocument();
 }
-

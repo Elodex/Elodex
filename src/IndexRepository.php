@@ -352,7 +352,7 @@ class IndexRepository implements IndexRepositoryContract
             $search->setSize($limit);
         }
 
-        if ( !is_null($offset)) {
+        if (! is_null($offset)) {
             $search->setFrom($offset);
         }
 

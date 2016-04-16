@@ -51,7 +51,7 @@ class BulkOperationException extends \Exception
                     $exception = new Missing404Exception($error, $statusCode);
                 } elseif ($statusCode === 409) {
                     $exception = new Conflict409Exception($error, $statusCode);
-                } elseif ($statusCode === 408 ) {
+                } elseif ($statusCode === 408) {
                     $exception = new RequestTimeout408Exception($error, $statusCode);
                 } else {
                     $exception = new \Exception($error, $statusCode);
