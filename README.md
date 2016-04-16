@@ -59,6 +59,7 @@ This can be done by editing the `app.php` file in the `config` folder. Search fo
   ],
 ```
 
+
 ### Configuration
 Even though Elodex does ship with a default configuration which should work for standard Elasticsearch installations you usually want to specify your own settings.
 You can do so by publishing the standard config file to your application:
@@ -76,8 +77,10 @@ This will copy a standard config to ``config/elodex.php``. Make sure your Elasti
   'default_index' => 'my_app_index',
 ```
 
+
 ### Add Indexing Capability to your Eloquent Model Classes
 There are two possibilities to add indexing capability to your Eloquent model classes.
+
 
 #### 1. Using the IndexedModel Trait
 To add the basic indexing functionality to your existing Eloquent models you can include the `IndexedModel` trait which automatically implements the needed `Contracts\IndexedModel` interface for you.
@@ -98,9 +101,11 @@ class Model extends BaseModel implements IndexedModelContract
 Note that the trait implements the `newCollection` method. You must make sure your Eloquent class doesn't overwrite this method, otherwise you're going to lose the convenient way to use indexing operations on the collections returned by model queries.
 
 The `IndexedModel` trait does three things for you:
+
 1. it implements the `Contracts\IndexedModel` interface and thus makes the model capable of being added to an index repository.
 2. it adds a convenient way to access the default index manager and the default index repository for your model class.
 3. it adds the methods to interact with the index repository. This includes adding your model instances to the index repository, removing them and performing an index based search.
+
 
 #### 2. Deriving from the Elodex Model Class
 Deriving from the abstract Elodex `Model` class is a better approach than the trait if your existing model directly inherits from the Eloquent base model class.
@@ -224,6 +229,7 @@ That's where you tell your index how your indexed documents should be analyzed. 
 
 Elodex provides a method to create default mappings based on the attribute settings you've (hopefully) already defined on your model class.
 The following class properties will be used to create the mapping in the specified order:
+
 1. **`dates`**: all attributes specified here will be mapped to an Elasticsearch date format accordingly. The `indexMappingDateFormat` property defines which date formatting will be used for the mapping, the default format is `yyyy-MM-dd HH:mm:ss`.  
 *This does not work if your Eloquent model class uses a custom date through the `dateFormat` property !*
 2. **`casts`**: the types specified in this property will be mapped to [Elasticsearch field dataypes][Elasticsearch field datatypes]. The attribute will not be added to the mapping if the type cannot be mapped.
@@ -281,6 +287,7 @@ The general rules about changing the index mappings apply. I.e. you might need t
 Note that Elasticsearch actually doesn't require you to explicitly put property mappings in order to add documents because it supports a [dynamic mapping][Elasticsearch dynamic mapping] mechanism.
 But there's hardly any use case in which you would not want to use an explicit mapping for your Eloquent model classes.
 
+
 #### Property Mappings for Relationships
 All property mappings for the relationships of a model are defined and created by the parent.
 Using the `IndexedModel` trait on a related model class is not needed and will have no effect on the mappings created by the parent for this relationship.
@@ -315,6 +322,7 @@ With the exception of the way relationships are integrated into the parent docum
 If you want to modify the way indexed documents are being created you can do so by implementing your own `toIndexDocument` in your model class.
 
 Partial updates use the `getChangedIndexDocument` to create a document for the changed data.
+
 
 #### Documents of related Models
 As described in *Indexing Model Relationships* any relationship specified in `indexRelations` will cause the relationship to be added to your parent's document.
@@ -381,6 +389,7 @@ If you want to remove multiple documents as a result of a query you can do so by
 User::all()->removeFromIndex();
 ```
 
+
 ### Partial Updates
 Partially updating your model is supported through the `updateIndex` method.
 
@@ -400,7 +409,6 @@ If you partially update a model with indexed relationships it might become incon
 
 Generally speaking: there're very few reasons to use partial updates at all due to the fact [how partial updates work in Elasticsearch][Elasticsearch partial updates].
 Elasticsearch will always internally perform a full document update anyways.
-
 
 
 ## Index Search
