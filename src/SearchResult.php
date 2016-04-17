@@ -28,7 +28,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
     /**
      * Dictionary of metadata for the documents.
      *
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
     protected $documentsMetadata;
 
@@ -70,7 +70,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      * Return the metadata from the hits as a dictionary keyes by the hit IDs.
      *
      * @param  array $hits
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function metadataForHits(array $hits)
     {
@@ -81,7 +81,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
             $metadata[$hit['_id']] = array_except($hit, $exclusions);
         }
 
-        return $metadata;
+        return new BaseCollection($metadata);
     }
 
     /**
@@ -93,7 +93,11 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      */
     protected function documentCollectionForHits(array $hits)
     {
-        $items = Arr::pluck($hits['hits'], '_source', '_id');
+        $items = [];
+
+        foreach ($hits['hits'] as $hit) {
+            $items[$hit['_id']] = $hit['_source'];
+        }
 
         return new BaseCollection($items);
     }
@@ -187,6 +191,16 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
     }
 
     /**
+     * Get the scroll ID of a scroll based search.
+     *
+     * @return string|null
+     */
+    public function getScrollId()
+    {
+        return Arr::get($this->data, '_scroll_id');
+    }
+
+    /**
      * Get the aggregations of the search result.
      *
      * @return array
@@ -207,6 +221,17 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
     }
 
     /**
+     * Get the highlighted fields of a document in the search result.
+     *
+     * @param  string $id
+     * @return array|null
+     */
+    public function getDocumentHighlight($id)
+    {
+        return Arr::get($this->getDocumentsMetadata(), "{$id}.highlight");
+    }
+
+    /**
      * Get the documents returned by the search.
      *
      * @return \Illuminate\Support\Collection
@@ -214,6 +239,31 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
     public function getDocuments()
     {
         return $this->documents;
+    }
+
+    /**
+     * Get the documents returned by the search filled with highlighted fields.
+     *
+     * @return array
+     */
+    public function getHighlightedDocuments()
+    {
+        $highlightedDocuments = [];
+
+        // Merge the highlighted fields into the source documents.
+        foreach ($this->getDocuments() as $key => $document) {
+            $highlighted = $this->getDocumentHighlight($key) ? : [];
+            if (! empty($highlighted)) {
+                // Merge the highlight fragments.
+                foreach ($highlighted as $field => $highlights) {
+                    $highlighted[$field] = implode('', $highlights);
+                }
+            }
+
+            $highlightedDocuments[$key] = array_merge($document, $highlighted);
+        }
+
+        return $highlightedDocuments;
     }
 
     /**

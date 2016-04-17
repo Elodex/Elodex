@@ -17,15 +17,15 @@ class LengthAwarePaginator extends BasePaginator
      * Create a new paginator instance.
      *
      * @param  \Elodex\SearchResult $searchResult
-     * @param  int $total
      * @param  int $perPage
      * @param  int|null $currentPage
      * @param  array $options (path, query, fragment, pageName)
      */
-    public function __construct($searchResult, $total, $perPage, $currentPage = null, array $options = [])
+    public function __construct($searchResult, $perPage, $currentPage = null, array $options = [])
     {
         $this->searchResult = $searchResult;
 
+        $total = $this->searchResult->totalHits();
         $items = $this->searchResult->getDocuments();
 
         parent::__construct($items, $total, $perPage, $currentPage, $options);
