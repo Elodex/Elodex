@@ -17,6 +17,7 @@ use ONGR\ElasticsearchDSL\Query\WildcardQuery;
 use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
 use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Highlight\Highlight;
+use ONGR\ElasticsearchDSL\Suggest\TermSuggest;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
@@ -94,9 +95,9 @@ class Search
     }
 
     /**
-     * Get the results for an index based search.
+     * Get the results for the search on the index repository of the model.
      *
-     * @return $this
+     * @return \Elodex\SearchResult
      */
     public function get()
     {
@@ -392,6 +393,23 @@ class Search
         }
 
         $highlight->setTags($preTags, $postTags);
+
+        return $this;
+    }
+
+    /**
+     * Add a term suggest request to the search query.
+     *
+     * @param  string $name
+     * @param  string $text
+     * @param  array $parameters
+     * @return $this
+     */
+    public function suggestTerm($name, $text, array $parameters = [])
+    {
+        $suggest = new TermSuggest($name, $text, $parameters);
+
+        $this->addSuggest($suggest);
 
         return $this;
     }

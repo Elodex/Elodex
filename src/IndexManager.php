@@ -3,6 +3,8 @@
 namespace Elodex;
 
 use Elodex\Contracts\IndexClientResolver as IndexClientResolverContract;
+use Elodex\Suggest;
+use Elodex\SuggestResult;
 use Illuminate\Support\Arr;
 
 class IndexManager implements IndexClientResolverContract
@@ -241,8 +243,8 @@ class IndexManager implements IndexClientResolverContract
     /**
      * Get stats from the index.
      *
-     * @param  mixed|null $index
-     * @param  mixed|null $fields
+     * @param  string|null $index
+     * @param  string|null $fields
      * @return array
      */
     public function stats($index = null, $fields = null)
@@ -275,6 +277,26 @@ class IndexManager implements IndexClientResolverContract
         ];
 
         return $this->client->indices()->upgrade($params);
+    }
+
+    /**
+     * Run a suggestion request.
+     *
+     * @param  \Elodex\Suggest $suggest
+     * @param  string|null $index
+     * @return \Elodex\SuggestResult
+     */
+    public function suggest(Suggest $suggest, $index = null)
+    {
+        $indexName = $index ? : $this->getDefaultIndex();
+
+        $params = ['index' => $indexName];
+        $params['body'] = $suggest->toArray();
+
+        // Perform the suggest request.
+        $results = $this->client->suggest($params);
+
+        return new SuggestResult($results);
     }
 
     /**

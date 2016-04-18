@@ -6,6 +6,7 @@ use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Support\Arrayable;
 use Elodex\Collection;
+use Elodex\SuggestResult;
 use IteratorAggregate;
 use Countable;
 
@@ -48,6 +49,13 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
     protected $items;
 
     /**
+     * The suggest result instance if available.
+     *
+     * @var \Elodex\SuggestResult|null
+     */
+    protected $suggestResult;
+
+    /**
      * Create a new SearchResult instance.
      *
      * @param array  $results
@@ -59,11 +67,17 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
 
         $this->entityClass = $entityClass;
 
+        // Process the hits of the query result data.
         $this->documentsMetadata = $this->metadataForHits($this->data['hits']);
         $this->documents = $this->documentCollectionForHits($this->data['hits']);
 
         unset($this->data['hits']['hits']);
         $this->items = null;
+
+        // Process the suggestions of the query result data.
+        if (isset($this->data['suggest'])) {
+            $this->suggestResult = new SuggestResult($this->data['suggest']);
+        }
     }
 
     /**
@@ -285,6 +299,16 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
         }
 
         return $this->items;
+    }
+
+    /**
+     * Return the suggestions of the query result if available.
+     *
+     * @return \Elodex\SuggestResult|null
+     */
+    public function getSuggestions()
+    {
+        return $this->suggestResult;
     }
 
     /**

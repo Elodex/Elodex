@@ -62,15 +62,15 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
      */
     public function __construct($client, $modelClass, $indexName)
     {
-        $instance = new $modelClass;
-        if (! $instance instanceof IndexedModelContract) {
+        $model = new $modelClass;
+        if (! $model instanceof IndexedModelContract) {
             throw new InvalidArgumentException('Model class does not implement the IndexedModel interface');
         }
 
         $this->client = $client;
         $this->modelClass = $modelClass;
         $this->indexName = $indexName;
-        $this->indexTypeName = $instance->getIndexTypeName();
+        $this->indexTypeName = $model->getIndexTypeName();
     }
 
     /**
