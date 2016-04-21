@@ -227,7 +227,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
     /**
      * Returns the metadata dictionary for the documents.
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function getDocumentsMetadata()
     {
