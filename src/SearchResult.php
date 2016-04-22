@@ -31,7 +31,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      *
      * @var \Illuminate\Support\Collection
      */
-    protected $documentsMetadata;
+    protected $metadata;
 
     /**
      * The documents returned by the search result.
@@ -68,7 +68,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
         $this->entityClass = $entityClass;
 
         // Process the hits of the query result data.
-        $this->documentsMetadata = $this->metadataForHits($this->data['hits']);
+        $this->metadata = $this->metadataForHits($this->data['hits']);
         $this->documents = $this->documentCollectionForHits($this->data['hits']);
 
         unset($this->data['hits']['hits']);
@@ -140,12 +140,12 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
             $model = $dictionary[$id];
 
             // Fill the model with index metadata.
-            if (isset($this->documentsMetadata[$id]['_score'])) {
-                $model->setIndexScore($this->documentsMetadata[$id]['_score']);
+            if (isset($this->metadata[$id]['_score'])) {
+                $model->setIndexScore($this->metadata[$id]['_score']);
             }
 
-            if (isset($this->documentsMetadata[$id]['_version'])) {
-                $model->setIndexVersion($this->documentsMetadata[$id]['_version']);
+            if (isset($this->metadata[$id]['_version'])) {
+                $model->setIndexVersion($this->metadata[$id]['_version']);
             }
 
             $sorted[$id] = $model;
@@ -229,9 +229,9 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getDocumentsMetadata()
+    public function getMetadata()
     {
-        return $this->documentsMetadata;
+        return $this->metadata;
     }
 
     /**
@@ -240,7 +240,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      * @param  string $id
      * @return array|null
      */
-    public function getDocumentHighlight($id)
+    public function getHighlight($id)
     {
         return Arr::get($this->getDocumentsMetadata(), "{$id}.highlight");
     }
