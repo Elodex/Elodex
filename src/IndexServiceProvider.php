@@ -41,10 +41,13 @@ class IndexServiceProvider extends ServiceProvider
 
     /**
      * Setup the config.
+     *
+     * @return void
      */
     protected function setupConfig()
     {
         $source = realpath(__DIR__.'/config/elodex.php');
+
         $this->publishes([$source => config_path('elodex.php')], 'config');
 
         $this->mergeConfigFrom($source, 'elodex');
