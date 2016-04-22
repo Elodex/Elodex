@@ -21,7 +21,6 @@ Your Eloquent database will remain your main data source while you can use the f
   * [Configuration](#configuration)
   * [Add Indexing Capability to your Eloquent Model Classes](#add-indexing-capability-to-your-eloquent-model-classes)
 - [Index Repositories](#index-repositories)
-  * [Adding Models to the Index](#adding-models-to-the-index)
 - [Documentation](#documentation)
 - [License](#license)
 
