@@ -13,7 +13,7 @@ class DeleteIndex extends Command
      * @var string
      */
     protected $signature = 'es:delete-index
-                            {--i|index= : The name of the index to delete}
+                            {--I|index= : The name of the index to delete}
                             {--force : Force deletion without prompt}';
 
     /**

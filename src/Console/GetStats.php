@@ -15,7 +15,7 @@ class GetStats extends Command
      * @var string
      */
     protected $signature = 'es:get-stats
-                            {--i|index= : Name of the index}
+                            {--I|index= : Name of the index}
                             {--dump : Print the result as a dump}';
 
     /**

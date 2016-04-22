@@ -17,8 +17,8 @@ class GetMappings extends Command
      * @var string
      */
     protected $signature = 'es:get-mappings
-                            {--c|class= : Indexed model class for which the mappings should received}
-                            {--i|index= : Name of the index}
+                            {--C|class= : Indexed model class for which the mappings should received}
+                            {--I|index= : Name of the index}
                             {--dump : Print the result as a dump}';
 
     /**
