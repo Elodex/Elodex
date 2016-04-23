@@ -66,9 +66,7 @@ class IndexServiceProvider extends ServiceProvider
             return new ElasticsearchClientManager($config);
         });
 
-        $this->app->alias(
-            ElasticsearchClientManager::class, 'elodex.client'
-        );
+        $this->app->alias(ElasticsearchClientManager::class, 'elodex.client');
     }
 
     /**
@@ -85,9 +83,7 @@ class IndexServiceProvider extends ServiceProvider
             return new IndexManager($client, $defaultIndex);
         });
 
-        $this->app->alias(
-            IndexManager::class, 'elodex.index'
-        );
+        $this->app->alias(IndexManager::class, 'elodex.index');
     }
 
     /**
@@ -104,9 +100,7 @@ class IndexServiceProvider extends ServiceProvider
             return new IndexRepositoryManager($client, $indexName);
         });
 
-        $this->app->alias(
-            IndexRepositoryManager::class, 'elodex.repository'
-        );
+        $this->app->alias(IndexRepositoryManager::class, 'elodex.repository');
     }
 
     /**
