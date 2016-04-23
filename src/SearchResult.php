@@ -242,7 +242,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      */
     public function getHighlight($id)
     {
-        return Arr::get($this->getDocumentsMetadata(), "{$id}.highlight");
+        return Arr::get($this->getMetadata(), "{$id}.highlight");
     }
 
     /**
@@ -266,7 +266,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
 
         // Merge the highlighted fields into the source documents.
         foreach ($this->getDocuments() as $key => $document) {
-            $highlighted = $this->getDocumentHighlight($key) ? : [];
+            $highlighted = $this->getHighlight($key) ? : [];
             if (! empty($highlighted)) {
                 // Merge the highlight fragments.
                 foreach ($highlighted as $field => $highlights) {
