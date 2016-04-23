@@ -58,7 +58,7 @@ class GetMappings extends Command
     {
         $class = $this->option('class');
         $dump = $this->option('dump') ? true : false;
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
         $indexTypeName = null;
 
         if (! empty($class)) {
@@ -77,7 +77,7 @@ class GetMappings extends Command
         $mappings = $this->indexManager->getMappings($indexName, $indexTypeName);
 
         if (empty($mappings)) {
-            $this->warn("No mappings found.");
+            $this->warn('No mappings found.');
             return 1;
         }
 
@@ -114,7 +114,7 @@ class GetMappings extends Command
         $rows = [];
 
         foreach ($mappings as $property => $mapping) {
-            $row = [ $property ];
+            $row = [$property];
             $row[] = Arr::get($mapping, 'type', '');
             $row[] = Arr::get($mapping, 'format', '');
             $row[] = Arr::get($mapping, 'anaylzer', '');

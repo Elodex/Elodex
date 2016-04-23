@@ -3,8 +3,6 @@
 namespace Elodex;
 
 use Illuminate\Support\ServiceProvider;
-use Elodex\IndexManager;
-use Elodex\IndexRepositoryManager;
 use Elodex\Console\OpenIndex;
 use Elodex\Console\CloseIndex;
 use Elodex\Console\DeleteIndex;

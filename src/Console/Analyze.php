@@ -58,7 +58,7 @@ class Analyze extends Command
         $analyzer = $this->argument('analyzer');
         $text = $this->argument('text');
 
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
         $dump = $this->option('dump') ? true : false;
 
         $filters = $this->option('filter') ? explode(',', $this->option('filter')) : [];

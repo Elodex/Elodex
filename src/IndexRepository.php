@@ -5,8 +5,6 @@ namespace Elodex;
 use Elodex\Contracts\IndexedModel as IndexedModelContract;
 use Elodex\Contracts\IndexRepository as IndexRepositoryContract;
 use Elodex\Contracts\IndexRepositoryScrolling as IndexRepositoryScrollingContract;
-use Elodex\Search;
-use Elodex\SearchResult;
 use Elodex\Exceptions\InvalidArgumentException;
 use Elodex\Exceptions\BulkOperationException;
 use Elodex\Exceptions\MultiGetException;
@@ -486,7 +484,7 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
      */
     protected function clearScroll($scrollId)
     {
-        $params = [ 'scroll_id' => $scrollId ];
+        $params = ['scroll_id' => $scrollId];
 
         $results = $this->client->clearScroll($params);
 
@@ -634,7 +632,7 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
         return [
             '_index' => $this->indexName,
             '_type' => $this->indexTypeName,
-            '_id' => $model->getIndexKey()
+            '_id' => $model->getIndexKey(),
         ];
     }
 

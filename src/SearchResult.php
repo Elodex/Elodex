@@ -5,8 +5,6 @@ namespace Elodex;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Support\Arrayable;
-use Elodex\Collection;
-use Elodex\SuggestResult;
 use IteratorAggregate;
 use Countable;
 
@@ -266,7 +264,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
 
         // Merge the highlighted fields into the source documents.
         foreach ($this->getDocuments() as $key => $document) {
-            $highlighted = $this->getHighlight($key) ? : [];
+            $highlighted = $this->getHighlight($key) ?: [];
             if (! empty($highlighted)) {
                 // Merge the highlight fragments.
                 foreach ($highlighted as $field => $highlights) {
@@ -295,7 +293,7 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
 
         // Lazy loading of the models.
         if (is_null($this->items)) {
-            $this->items = $this->loadItems($with ? : []);
+            $this->items = $this->loadItems($with ?: []);
         }
 
         return $this->items;

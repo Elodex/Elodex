@@ -114,7 +114,7 @@ trait IndexMapping
             if (($p = strpos($relation, '.')) !== false) {
                 // Extract the first relation from the dot syntax and the remainder
                 // which are the child relations
-                $relatedIndexRelations = [substr($relation, $p+1)];
+                $relatedIndexRelations = [substr($relation, $p + 1)];
                 $relation = substr($relation, 0, $p);
             } else {
                 $relatedIndexRelations = [];
@@ -207,7 +207,7 @@ trait IndexMapping
      *
      * @param  \Illuminate\Database\Eloquent\Model $model
      * @param  string $key
-     * @return string
+     * @return string|null
      */
     protected function getIndexAttributeType(BaseModel $model, $key)
     {

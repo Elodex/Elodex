@@ -2,8 +2,6 @@
 
 namespace Elodex;
 
-use Elodex\IndexManagement;
-use Elodex\IndexRepositoryAccess;
 use Elodex\Contracts\IndexedDocument;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
@@ -220,6 +218,7 @@ trait IndexedModel
         $visible = $this->getVisible();
         if (count($visible) > 0) {
             $this->setVisible(array_diff($visible, $hiddenRelations));
+
             return;
         }
 

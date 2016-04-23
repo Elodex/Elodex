@@ -2,8 +2,6 @@
 
 namespace Elodex\Contracts;
 
-use Elodex\Contracts\IndexedDocument;
-
 interface IndexedModel extends IndexedDocument
 {
     /**

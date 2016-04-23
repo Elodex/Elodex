@@ -55,7 +55,7 @@ class Search
      * @var array
      */
     protected $passthrough = [
-        'toArray', 'isExplain'
+        'toArray', 'isExplain',
     ];
 
     /**
@@ -424,8 +424,8 @@ class Search
      */
     public function paginate($perPage = null, $pageName = 'page', $page = null)
     {
-        $perPage = $perPage ? : $this->getModel()->getPerPage();
-        $page = $page ? : (int) Paginator::resolveCurrentPage($pageName);
+        $perPage = $perPage ?: $this->getModel()->getPerPage();
+        $page = $page ?: (int) Paginator::resolveCurrentPage($pageName);
 
         $this->search->setFrom($perPage * $page);
         $this->search->setSize($perPage);

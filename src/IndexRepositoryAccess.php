@@ -2,7 +2,6 @@
 
 namespace Elodex;
 
-use Elodex\Search;
 use Illuminate\Container\Container;
 
 trait IndexRepositoryAccess
@@ -15,6 +14,7 @@ trait IndexRepositoryAccess
     public function getIndexRepository()
     {
         $app = Container::getInstance();
+
         return $app->make('elodex.repository', [])->repository(get_class($this));
     }
 
@@ -80,6 +80,7 @@ trait IndexRepositoryAccess
     public static function getClassIndexRepository()
     {
         $app = Container::getInstance();
+
         return $app->make('elodex.repository', [])->repository(get_called_class());
     }
 

@@ -49,7 +49,7 @@ class OpenIndex extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
 
         $this->indexManager->openIndex($indexName);
 

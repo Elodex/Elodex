@@ -2,7 +2,6 @@
 
 namespace Elodex;
 
-use Elodex\IndexManager;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Support\Arrayable;
 use ONGR\ElasticsearchDSL\Suggest\TermSuggest;

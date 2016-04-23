@@ -52,7 +52,7 @@ class Upgrade extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : '_all';
+        $indexName = $this->option('index') ?: '_all';
         $wait = $this->option('wait') ? true : false;
         $dump = $this->option('dump') ? true : false;
 
