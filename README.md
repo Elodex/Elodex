@@ -157,4 +157,4 @@ Please see [License File](LICENSE.txt) for further information.
 [Elasticsearch]: https://www.elastic.co/guide/ "Elasticsearch Docs"
 [Elasticsearch terms]: https://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html "Elasticsearch Glossary of terms"
 [Elodex]: https://github.com/elodex/Elodex "Elodex"
-[Elodex Documentation]: https://github.com/Elodex/Documentation/blob/develop/00_TOC.md "Elodex Documentation"
+[Elodex Documentation]: https://github.com/Elodex/Documentation/blob/develop/ "Elodex Documentation"
