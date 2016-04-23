@@ -51,7 +51,7 @@ class OpenIndex extends Command
     {
         $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
 
-        $results = $this->indexManager->openIndex($indexName);
+        $this->indexManager->openIndex($indexName);
 
         $this->info("Index '{$indexName}' successfully opened.");
     }

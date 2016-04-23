@@ -87,7 +87,7 @@ class GetMappings extends Command
         }
 
         if (empty($class)) {
-            foreach ($mappings as $idx => $data) {
+            foreach ($mappings as $data) {
                 foreach ($data['mappings'] as $t => $m) {
                     $this->info("Index property mappings for type '{$t}':");
 
