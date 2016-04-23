@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.0
+## Version 1.0 - _under development_ :construction: :beetle:
 - [Scrolling][Elodex Scrolling] added
 - [Highlighting][Elodex Highlighting] support
 - [Suggestions][Elodex Suggestions] support
