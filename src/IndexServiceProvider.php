@@ -115,28 +115,28 @@ class IndexServiceProvider extends ServiceProvider
     {
         $indexManager = $this->app[IndexManager::class];
 
-        $this->app->singleton(OpenIndex::class, function() use ($indexManager) {
+        $this->app->singleton(OpenIndex::class, function () use ($indexManager) {
             return new OpenIndex($indexManager);
         });
-        $this->app->singleton(CloseIndex::class, function() use ($indexManager) {
+        $this->app->singleton(CloseIndex::class, function () use ($indexManager) {
             return new CloseIndex($indexManager);
         });
-        $this->app->singleton(CreateIndex::class, function() use ($indexManager) {
+        $this->app->singleton(CreateIndex::class, function () use ($indexManager) {
             return new CreateIndex($indexManager);
         });
-        $this->app->singleton(DeleteIndex::class, function() use ($indexManager) {
+        $this->app->singleton(DeleteIndex::class, function () use ($indexManager) {
             return new DeleteIndex($indexManager);
         });
-        $this->app->singleton(GetMappings::class, function() use ($indexManager) {
+        $this->app->singleton(GetMappings::class, function () use ($indexManager) {
             return new GetMappings($indexManager);
         });
-        $this->app->singleton(GetStats::class, function() use ($indexManager) {
+        $this->app->singleton(GetStats::class, function () use ($indexManager) {
             return new GetStats($indexManager);
         });
-        $this->app->singleton(Upgrade::class, function() use ($indexManager) {
+        $this->app->singleton(Upgrade::class, function () use ($indexManager) {
             return new Upgrade($indexManager);
         });
-        $this->app->singleton(Analyze::class, function() use ($indexManager) {
+        $this->app->singleton(Analyze::class, function () use ($indexManager) {
             return new Analyze($indexManager);
         });
 
