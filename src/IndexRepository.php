@@ -616,6 +616,7 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
     {
         $params = $this->getBaseParams();
         $params['id'] = $model->getIndexKey();
+
         return $params;
     }
 

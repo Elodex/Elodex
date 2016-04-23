@@ -78,11 +78,13 @@ class GetMappings extends Command
 
         if (empty($mappings)) {
             $this->warn('No mappings found.');
+
             return 1;
         }
 
         if ($dump) {
             (new Dumper)->dump($mappings);
+
             return 0;
         }
 

@@ -60,6 +60,7 @@ class CreateIndex extends Command
                 $this->resetIndex($indexName);
             } else {
                 $this->error("Index '{$indexName}' already exists, exiting. Use --reset to force the creation of a new index.");
+
                 return 1;
             }
         }
