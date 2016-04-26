@@ -132,5 +132,4 @@ class IndexRepositoryCollectionTest extends \PHPUnit_Framework_TestCase
             throw $ex;
         }
     }
-
 }

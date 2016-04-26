@@ -51,6 +51,14 @@ trait IndexedModel
     /**
      * {@inheritdoc}
      */
+    public function getIndexRelations()
+    {
+        return $this->indexRelations;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function toIndexDocument()
     {
         // Temporarily disable all whitelisting and blacklisting for relations.

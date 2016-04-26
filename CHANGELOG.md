@@ -6,6 +6,8 @@
 - [Suggestions][Elodex Suggestions] support
 - `limit`, `take` and `offset` added to the [search query class][Elodex Search]
 - Metadata of search results is now returned as a collection instead of an array
+- The `getItems` method on the `SearchResult` class was renamed to `getModels`
+- The `all` method on the index repository no longer returns models but a search result instance
 
 ## Version 0.9
 - First pre-release

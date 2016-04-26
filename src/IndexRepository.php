@@ -292,7 +292,7 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
      * @param  \Elodex\Contracts\IndexedModel|\Illuminate\Support\Collection $model
      * @return array
      */
-    public function getDocument($model, $fields = null)
+    public function getDocumentForModel($model, $fields = null)
     {
         $this->validateModelClass($model);
 
@@ -311,7 +311,7 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
      * @param  \Illuminate\Support\Collection $collection
      * @return array
      */
-    public function getDocuments(BaseCollection $collection, $fields = null)
+    public function getDocumentsForModels(BaseCollection $collection, $fields = null)
     {
         if ($collection->isEmpty()) {
             return [];
@@ -343,21 +343,17 @@ class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrolli
     /**
      * {@inheritdoc}
      */
-    public function all(array $with = null, $limit = null, $offset = null)
+    public function all($limit = null)
     {
-        $search = new Search();
+        $search = (new Search())
+            ->matchAll()
+            ->sort('_doc');
 
         if (! is_null($limit)) {
             $search->setSize($limit);
         }
 
-        if (! is_null($offset)) {
-            $search->setFrom($offset);
-        }
-
-        $results = $this->search($search);
-
-        return $results->getItems($with);
+        return $this->search($search);
     }
 
     /**

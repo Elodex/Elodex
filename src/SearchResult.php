@@ -118,13 +118,18 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      * Loads the Eloquent models for the indexed documents found by the search.
      * Uses eager loading for the specified relations array.
      *
-     * @param  array $with
+     * @param  array|null $with
      * @return \Elodex\Collection
      */
-    protected function loadItems(array $with = [])
+    protected function loadItems(array $with = null)
     {
         $ids = array_keys($this->documents->all());
         $class = $this->entityClass;
+
+        // Eager load the index relations by default.
+        if (is_null($with)) {
+            $with = (new $class)->getIndexRelations();
+        }
 
         // Load the Eloquent models from the DB.
         $collection = $class::with($with)->find($ids);
@@ -283,17 +288,18 @@ class SearchResult implements IteratorAggregate, Countable, Arrayable
      *
      * @param  array|null $with
      * @return \Illuminate\Database\Eloquent\Collection|array
+     * @throws \RuntimeException
      */
-    public function getItems(array $with = null)
+    public function getModels(array $with = null)
     {
         // Loading models is only supported for eloquent models.
         if (! is_a($this->entityClass, \Illuminate\Database\Eloquent\Model::class, true)) {
-            return $this->getDocuments();
+            throw new \RuntimeException("Entity class {$this->entityClass} is not an Eloquent model.");
         }
 
         // Lazy loading of the models.
         if (is_null($this->items)) {
-            $this->items = $this->loadItems($with ?: []);
+            $this->items = $this->loadItems($with);
         }
 
         return $this->items;

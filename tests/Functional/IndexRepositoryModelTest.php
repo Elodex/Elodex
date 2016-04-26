@@ -97,6 +97,11 @@ class BaseIndexedModel implements IndexedModel
         return static::$id++;
     }
 
+    public function getIndexRelations()
+    {
+        return [];
+    }
+
     public function setIndexVersion($version)
     {
         return $this;

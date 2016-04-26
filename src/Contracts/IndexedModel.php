@@ -19,6 +19,13 @@ interface IndexedModel extends IndexedDocument
     public function getIndexKey();
 
     /**
+     * Returns the indexed relationships of the model.
+     *
+     * @return array
+     */
+    public function getIndexRelations();
+
+    /**
      * Get the changed document data of this model instance used for incremental
      * updating of the index entry.
      *

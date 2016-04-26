@@ -12,7 +12,6 @@ use Mockery as m;
  */
 class BulkOperationTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * {@inheritdoc}
      */
