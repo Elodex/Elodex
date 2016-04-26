@@ -29,6 +29,11 @@ class Suggest implements Arrayable
      */
     protected $suggesters = [];
 
+    /**
+     * Create a new suggest instance.
+     *
+     * @param \Elodex\IndexManager $indexManager
+     */
     public function __construct(IndexManager $indexManager)
     {
         $this->indexManager = $indexManager;

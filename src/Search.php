@@ -16,8 +16,10 @@ use ONGR\ElasticsearchDSL\Query\RegexpQuery;
 use ONGR\ElasticsearchDSL\Query\WildcardQuery;
 use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
 use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
+use ONGR\ElasticsearchDSL\Query\NestedQuery;
 use ONGR\ElasticsearchDSL\Highlight\Highlight;
 use ONGR\ElasticsearchDSL\Suggest\TermSuggest;
+use ONGR\ElasticsearchDSL\BuilderInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
@@ -300,6 +302,24 @@ class Search
     }
 
     /**
+     * Add a nested query to the search.
+     *
+     * @param  string $path
+     * @param  \ONGR\ElasticsearchDSL\BuilderInterface $query
+     * @param  string $boolType
+     * @param  array $parameters
+     * @return $this
+     */
+    public function nestedQuery($path, BuilderInterface $query, $boolType = BoolQuery::MUST, $parameters = [])
+    {
+        $nestedQuery = new NestedQuery($path, $query, $parameters);
+
+        $this->addQuery($nestedQuery, $boolType);
+
+        return $this;
+    }
+
+    /**
      * Set maximum number of results.
      *
      * @param  int $value
@@ -351,6 +371,19 @@ class Search
         $this->addSort($sort);
 
         return $this;
+    }
+
+    /**
+     * Alias for sort method.
+     *
+     * @param  string $field
+     * @param  string $order
+     * @param  string $params
+     * @return $this
+     */
+    public function orderBy($field, $order = null, $params = [])
+    {
+        return $this->sort($field, $order, $params);
     }
 
     /**
@@ -489,6 +522,7 @@ class Search
             return call_user_func_array([$this->search, $method], $parameters);
         }
 
+        // Proxied call to the underlying search instance.
         call_user_func_array([$this->search, $method], $parameters);
 
         return $this;

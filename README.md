@@ -19,15 +19,17 @@ Your Eloquent database will remain your main data source while you can use the f
 - [Installation](#installation)
 - [Laravel Integration](#laravel-integration)
   * [Configuration](#configuration)
-  * [Add Indexing Capability to your Eloquent Model Classes](#add-indexing-capability-to-your-eloquent-model-classes)
+  * [Extending your Eloquent Model Classes](#extending-your-eloquent-model-classes)
 - [Index Repositories](#index-repositories)
+- [Elasticsearch Client](#elasticsearch-client)
 - [Documentation](#documentation)
+- [Changelog](#changelog)
 - [License](#license)
 
 
 ## Requirements
 
-Elodex requires Elasticsearch 2.0 or higher, PHP v5.6+ and Laravel 5.1+. Note that Laravel versions beyond 5.2 are currently not supported even though they might work.
+Elodex requires Elasticsearch 2.0 or higher, PHP v5.6+ and Laravel 5.1+.
 
 Besides the technical requirements you should have a profound knowledge of Eloquent and you should be familiar with the basic [Elasticsearch terms][Elasticsearch terms] and how Elasticsearch works in general.
 
@@ -91,8 +93,8 @@ This will copy a standard config to ``config/elodex.php``. Make sure your Elasti
 ```
 
 
-### Add Indexing Capability to your Eloquent Model Classes
-There are two possibilities to add indexing capability to your Eloquent model classes.
+### Extending your Eloquent Model Classes
+There are two possibilities to add indexing capabilities to your Eloquent model classes.
 
 
 #### 1. Using the IndexedModel Trait
@@ -142,14 +144,27 @@ $repository = User::getClassIndexRepository();
 There's usually no need to access the index repository directly since the indexed model classes provide a more convenient method to manage the repository entries.
 
 
+## Elasticsearch Client
+Elodex uses the [official PHP low-level client for Elasticsearch][Elasticsearch PHP Client].
+There's usually no need to access this client directly but Elodex makes a client instance globally available in case you need to perform some custom or raw queries.
+```php
+$client = app('elodex.client');
+```
+You may also use dependency injection with the `ElasticsearchClientManager` class to get a client instance.
+
+
 ## Documentation
 A detailed Elodex documentation can be [found here][Elodex Documentation].
+
+
+## Changelog
+The changelog can be found [here](CHANGELOG.md).
 
 
 ## License
 
 Elodex is an open source project licensed under the the [MIT license](http://opensource.org/licenses/MIT).
-Please see [License File](LICENSE.txt) for further information.
+Please see the [License File](LICENSE.txt) for further information.
 
 
 [gitflow]: http://nvie.com/posts/a-successful-git-branching-model/ "Gitflow Branching model"
@@ -158,3 +173,4 @@ Please see [License File](LICENSE.txt) for further information.
 [Elasticsearch terms]: https://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html "Elasticsearch Glossary of terms"
 [Elodex]: https://github.com/elodex/Elodex "Elodex"
 [Elodex Documentation]: https://github.com/Elodex/Documentation/tree/develop "Elodex Documentation"
+[Elasticsearch PHP Client]: https://github.com/elastic/elasticsearch-php "Official PHP low-level client for Elasticsearch"
