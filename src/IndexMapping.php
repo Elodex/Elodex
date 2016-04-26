@@ -49,8 +49,8 @@ trait IndexMapping
             $this->getDefaultIndexMappingProperties($model)
         );
 
-        // Custom mappings may overwrite any mapping.
-        return array_replace_recursive($merged, $customMappings);
+        // Custom mappings may overwrite any previously defined mapping.
+        return array_replace($merged, $customMappings);
     }
 
     /**
