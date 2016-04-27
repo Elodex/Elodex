@@ -49,7 +49,7 @@ class LengthAwarePaginator extends BasePaginator
      * @param  array|null $with
      * @return \Illuminate\Database\Eloquent\Collection|array
      */
-    public function getItems(array $with = null)
+    public function getModels(array $with = null)
     {
         return $this->searchResults->getModels($with);
     }
