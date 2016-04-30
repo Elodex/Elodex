@@ -172,5 +172,5 @@ Please see the [License File](LICENSE.txt) for further information.
 [Elasticsearch]: https://www.elastic.co/guide/ "Elasticsearch Docs"
 [Elasticsearch terms]: https://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html "Elasticsearch Glossary of terms"
 [Elodex]: https://github.com/elodex/Elodex "Elodex"
-[Elodex Documentation]: https://github.com/Elodex/Documentation/tree/develop "Elodex Documentation"
+[Elodex Documentation]: https://github.com/Elodex/Documentation "Elodex Documentation"
 [Elasticsearch PHP Client]: https://github.com/elastic/elasticsearch-php "Official PHP low-level client for Elasticsearch"
