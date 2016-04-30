@@ -11,6 +11,7 @@ use Elodex\Console\GetMappings;
 use Elodex\Console\GetStats;
 use Elodex\Console\Upgrade;
 use Elodex\Console\Analyze;
+use Elodex\Console\MakeSyncHandler;
 
 class IndexServiceProvider extends ServiceProvider
 {
@@ -143,7 +144,8 @@ class IndexServiceProvider extends ServiceProvider
             GetMappings::class,
             GetStats::class,
             Upgrade::class,
-            Analyze::class
+            Analyze::class,
+            MakeSyncHandler::class
         );
     }
 
