@@ -16,10 +16,16 @@ use ONGR\ElasticsearchDSL\Query\RegexpQuery;
 use ONGR\ElasticsearchDSL\Query\WildcardQuery;
 use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
 use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
+use ONGR\ElasticsearchDSL\Query\NestedQuery;
+use ONGR\ElasticsearchDSL\Highlight\Highlight;
+use ONGR\ElasticsearchDSL\Suggest\TermSuggest;
+use ONGR\ElasticsearchDSL\BuilderInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Str;
 use Elodex\Pagination\LengthAwarePaginator;
 use InvalidArgumentException;
+use BadMethodCallException;
 
 class Search
 {
@@ -38,12 +44,20 @@ class Search
     protected $search;
 
     /**
-     * The methods that should be returned from search DSL query builder.
+     * Blacklisted methods that should not be directly called on the query builder.
+     *
+     * @var array
+     */
+    protected $blacklist = [
+    ];
+
+    /**
+     * The methods that should be directly returned from search DSL query builder.
      *
      * @var array
      */
     protected $passthrough = [
-        'toArray'
+        'toArray', 'isExplain',
     ];
 
     /**
@@ -68,7 +82,7 @@ class Search
      * Set a model instance for the model being queried.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Elodex\Search
+     * @return $this
      * @throws \InvalidArgumentException
      */
     public function setModel(EloquentModel $model)
@@ -83,7 +97,7 @@ class Search
     }
 
     /**
-     * Get the results for an index based search.
+     * Get the results for the search on the index repository of the model.
      *
      * @return \Elodex\SearchResult
      */
@@ -99,7 +113,7 @@ class Search
      * @param  string $value
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function term($field, $value, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -117,7 +131,7 @@ class Search
      * @param  array $terms
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function terms($field, $terms, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -135,7 +149,7 @@ class Search
      * @param  string $query
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function commonTerms($field, $query, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -153,7 +167,7 @@ class Search
      * @param  string $value
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function prefix($field, $value, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -171,7 +185,7 @@ class Search
      * @param  string $query
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function match($field, $query, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -187,7 +201,7 @@ class Search
      *
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function matchAll($boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -205,7 +219,7 @@ class Search
      * @param  string $query
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function multiMatch(array $fields, $query, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -223,7 +237,7 @@ class Search
      * @param  string $regexpValue
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function regexp($field, $regexpValue, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -241,7 +255,7 @@ class Search
      * @param  string $value
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function wildcard($field, $value, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -259,7 +273,7 @@ class Search
      * @param  string $value
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function fuzzy($field, $value, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -276,7 +290,7 @@ class Search
      * @param  string $query
      * @param  string $boolType
      * @param  array $parameters
-     * @return \Elodex\Search
+     * @return $this
      */
     public function queryString($query, $boolType = BoolQuery::MUST, array $parameters = [])
     {
@@ -288,12 +302,67 @@ class Search
     }
 
     /**
+     * Add a nested query to the search.
+     *
+     * @param  string $path
+     * @param  \ONGR\ElasticsearchDSL\BuilderInterface $query
+     * @param  string $boolType
+     * @param  array $parameters
+     * @return $this
+     */
+    public function nestedQuery($path, BuilderInterface $query, $boolType = BoolQuery::MUST, $parameters = [])
+    {
+        $nestedQuery = new NestedQuery($path, $query, $parameters);
+
+        $this->addQuery($nestedQuery, $boolType);
+
+        return $this;
+    }
+
+    /**
+     * Set maximum number of results.
+     *
+     * @param  int $value
+     * @return $this
+     */
+    public function limit($value)
+    {
+        $this->setSize($value);
+
+        return $this;
+    }
+
+    /**
+     * Alias to set the "limit" value of the query.
+     *
+     * @param  int  $value
+     * @return $this
+     */
+    public function take($value)
+    {
+        return $this->limit($value);
+    }
+
+    /**
+     * Set the "offset" for the query.
+     *
+     * @param  int $value
+     * @return $this
+     */
+    public function offset($value)
+    {
+        $this->setFrom($value);
+
+        return $this;
+    }
+
+    /**
      * Add a field sort to the search.
      *
      * @param  string $field
      * @param  string $order
      * @param  string $params
-     * @return \Elodex\Search
+     * @return $this
      */
     public function sort($field, $order = null, $params = [])
     {
@@ -305,12 +374,86 @@ class Search
     }
 
     /**
+     * Alias for sort method.
+     *
+     * @param  string $field
+     * @param  string $order
+     * @param  string $params
+     * @return $this
+     */
+    public function orderBy($field, $order = null, $params = [])
+    {
+        return $this->sort($field, $order, $params);
+    }
+
+    /**
+     * Add a highlighted field to the search.
+     *
+     * @param  string $field
+     * @param  array $params
+     * @return $this
+     */
+    public function highlight($field, array $params = [])
+    {
+        $highlight = $this->getHighlight();
+
+        if (is_null($highlight)) {
+            $highlight = new Highlight();
+
+            $this->addHighlight($highlight);
+        }
+
+        $highlight->addField($field, $params);
+
+        return $this;
+    }
+
+    /**
+     * Sets html tag and its class used in highlighting.
+     *
+     * @param  array $preTags
+     * @param  array $postTags
+     * @return $this
+     */
+    public function withHighlightTags(array $preTags, array $postTags)
+    {
+        $highlight = $this->getHighlight();
+
+        if (is_null($highlight)) {
+            $highlight = new Highlight();
+
+            $this->addHighlight($highlight);
+        }
+
+        $highlight->setTags($preTags, $postTags);
+
+        return $this;
+    }
+
+    /**
+     * Add a term suggest request to the search query.
+     *
+     * @param  string $name
+     * @param  string $text
+     * @param  array $parameters
+     * @return $this
+     */
+    public function suggestTerm($name, $text, array $parameters = [])
+    {
+        $suggest = new TermSuggest($name, $text, $parameters);
+
+        $this->addSuggest($suggest);
+
+        return $this;
+    }
+
+    /**
      * Paginate the search.
      *
      * @param  int|null $perPage
      * @param  string $pageName
      * @param  int|null $page
-     * @return \Elodex\Search
+     * @return $this
      */
     public function paginate($perPage = null, $pageName = 'page', $page = null)
     {
@@ -322,10 +465,24 @@ class Search
 
         $results = $this->get();
 
-        return new LengthAwarePaginator($results, $results->totalHits(), $perPage, $page, [
+        return new LengthAwarePaginator($results, $perPage, $page, [
             'path' => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
         ]);
+    }
+
+    /**
+     * Make a scrolling request for the search expecting a large number of results.
+     *
+     * @param  string $duration
+     * @param  callable $callback
+     * @return void
+     */
+    public function scroll($duration, callable $callback)
+    {
+        $this->setScroll($duration);
+
+        $this->getModel()->getIndexRepository()->scroll($this, $callback);
     }
 
     /**
@@ -344,13 +501,28 @@ class Search
      * @param  string $method
      * @param  array $parameters
      * @return mixed
+     * @throws \BadMethodCallException
      */
     public function __call($method, $parameters)
     {
+        // Check the blacklist for the method.
+        if (in_array($method, $this->blacklist)) {
+            $className = static::class;
+
+            throw new BadMethodCallException("Call to undefined method {$className}::{$method}()");
+        }
+
+        // Explicit passthroughs to the search query instance.
         if (in_array($method, $this->passthrough)) {
             return call_user_func_array([$this->search, $method], $parameters);
         }
 
+        // Getters should return their result instead of $this.
+        if (Str::startsWith($method, 'get')) {
+            return call_user_func_array([$this->search, $method], $parameters);
+        }
+
+        // Proxied call to the underlying search instance.
         call_user_func_array([$this->search, $method], $parameters);
 
         return $this;

@@ -39,14 +39,13 @@ interface IndexRepository
     public function save($model);
 
     /**
-     * Get all indexed model entities.
+     * Get all indexed model documents.
      *
      * @param  array|null $with
      * @param  int|null $limit
-     * @param  int|null $offset
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Elodex\SearchResult
      */
-    public function all(array $with = null, $limit = null, $offset = null);
+    public function all($limit = null);
 
     /**
      * Perform a search on the index repository.

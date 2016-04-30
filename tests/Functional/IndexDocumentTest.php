@@ -10,7 +10,6 @@ use Mockery as m;
  */
 class IndexDocumentTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * {@inheritdoc}
      */

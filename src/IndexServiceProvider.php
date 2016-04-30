@@ -3,8 +3,6 @@
 namespace Elodex;
 
 use Illuminate\Support\ServiceProvider;
-use Elodex\IndexManager;
-use Elodex\IndexRepositoryManager;
 use Elodex\Console\OpenIndex;
 use Elodex\Console\CloseIndex;
 use Elodex\Console\DeleteIndex;
@@ -13,6 +11,7 @@ use Elodex\Console\GetMappings;
 use Elodex\Console\GetStats;
 use Elodex\Console\Upgrade;
 use Elodex\Console\Analyze;
+use Elodex\Console\MakeSyncHandler;
 
 class IndexServiceProvider extends ServiceProvider
 {
@@ -41,10 +40,13 @@ class IndexServiceProvider extends ServiceProvider
 
     /**
      * Setup the config.
+     *
+     * @return void
      */
     protected function setupConfig()
     {
         $source = realpath(__DIR__.'/config/elodex.php');
+
         $this->publishes([$source => config_path('elodex.php')], 'config');
 
         $this->mergeConfigFrom($source, 'elodex');
@@ -63,9 +65,7 @@ class IndexServiceProvider extends ServiceProvider
             return new ElasticsearchClientManager($config);
         });
 
-        $this->app->alias(
-            ElasticsearchClientManager::class, 'elodex.client'
-        );
+        $this->app->alias(ElasticsearchClientManager::class, 'elodex.client');
     }
 
     /**
@@ -82,9 +82,7 @@ class IndexServiceProvider extends ServiceProvider
             return new IndexManager($client, $defaultIndex);
         });
 
-        $this->app->alias(
-            IndexManager::class, 'elodex.index'
-        );
+        $this->app->alias(IndexManager::class, 'elodex.index');
     }
 
     /**
@@ -101,9 +99,7 @@ class IndexServiceProvider extends ServiceProvider
             return new IndexRepositoryManager($client, $indexName);
         });
 
-        $this->app->alias(
-            IndexRepositoryManager::class, 'elodex.repository'
-        );
+        $this->app->alias(IndexRepositoryManager::class, 'elodex.repository');
     }
 
     /**
@@ -148,7 +144,8 @@ class IndexServiceProvider extends ServiceProvider
             GetMappings::class,
             GetStats::class,
             Upgrade::class,
-            Analyze::class
+            Analyze::class,
+            MakeSyncHandler::class
         );
     }
 

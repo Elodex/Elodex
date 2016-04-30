@@ -52,14 +52,15 @@ class CreateIndex extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
-        $reset = $this->option('reset') ? : false;
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
+        $reset = $this->option('reset') ?: false;
 
         if ($this->indexManager->indicesExist([$indexName])) {
             if ($reset) {
                 $this->resetIndex($indexName);
             } else {
                 $this->error("Index '{$indexName}' already exists, exiting. Use --reset to force the creation of a new index.");
+
                 return 1;
             }
         }
@@ -81,7 +82,7 @@ class CreateIndex extends Command
     }
 
     /**
-     * Reset (delete) an existing index
+     * Reset (delete) an existing index.
      *
      * @param  string $indexName
      * @return void

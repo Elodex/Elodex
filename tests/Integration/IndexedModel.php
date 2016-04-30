@@ -24,6 +24,11 @@ class IndexedModel implements IndexedModelContract
         return $this->id;
     }
 
+    public function getIndexRelations()
+    {
+        return [];
+    }
+
     public function setIndexVersion($version)
     {
         return $this;
@@ -59,5 +64,3 @@ class IndexedModel implements IndexedModelContract
         return true;
     }
 }
-
-

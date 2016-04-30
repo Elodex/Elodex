@@ -49,9 +49,9 @@ class CloseIndex extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
 
-        $results = $this->indexManager->closeIndex($indexName);
+        $this->indexManager->closeIndex($indexName);
 
         $this->info("Index '{$indexName}' successfully closed.");
     }

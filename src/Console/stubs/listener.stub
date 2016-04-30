@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Listeners;
+
+use Elodex\IndexRepositoryManager;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use {FQModelClass} as Model;
+
+class {Listener} implements ShouldQueue
+{
+    use InteractsWithQueue;
+
+    /**
+     * The model's index repository.
+     *
+     * @var \Elodex\IndexRepository
+     */
+    protected $repository;
+
+    /**
+     * Create a new event subscriber instance.
+     *
+     * @param \Elodex\IndexRepositoryManager $repositoryManager
+     */
+    public function __construct(IndexRepositoryManager $repositoryManager)
+    {
+        $this->repository = $repositoryManager->repository(Model::class);
+    }
+
+    /**
+     * Message handler for model creations.
+     *
+     * @param  \{FQModelClass} $model
+     * @return void
+     */
+    public function onCreated(Model $model)
+    {
+        $this->repository->add($model);
+    }
+
+    /**
+     * Message handler for model updates.
+     *
+     * @param  \{FQModelClass} $model
+     * @return void
+     */
+    public function onSaved(Model $model)
+    {
+        $this->repository->save($model);
+    }
+
+    /**
+     * Message handler for model deletions.
+     *
+     * @param  \{FQModelClass} $model
+     * @return void
+     */
+    public function onDeleted(Model $model)
+    {
+        $this->repository->remove($model);
+    }
+
+    /**
+     * Message handler for model restorations.
+     *
+     * @param  \{FQModelClass} $model
+     * @return void
+     */
+    public function onRestored(Model $model)
+    {
+        $this->repository->save($model);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @return void
+     */
+    public function failed()
+    {
+        // TODO: handle failed index synchronizations.
+    }
+
+    /**
+     * Register the listeners for the subscriber.
+     *
+     * @param  \Illuminate\Events\Dispatcher  $events
+     * @return void
+     */
+    public function subscribe($events)
+    {
+        $events->listen(
+            'eloquent.created: '.Model::class, static::class.'@onCreated'
+        );
+
+        $events->listen(
+            'eloquent.saved: '.Model::class, static::class.'@onSaved'
+        );
+
+        $events->listen(
+            'eloquent.deleted: '.Model::class, static::class.'@onDeleted'
+        );
+
+        $events->listen(
+            'eloquent.restored: '.Model::class, static::class.'@onRestored'
+        );
+    }
+}

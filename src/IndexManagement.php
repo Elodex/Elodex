@@ -2,7 +2,6 @@
 
 namespace Elodex;
 
-use Elodex\IndexMapping;
 use Illuminate\Container\Container;
 
 trait IndexManagement
@@ -29,7 +28,7 @@ trait IndexManagement
     public static function openIndex($indexName = null)
     {
         $index = static::getDefaultIndexManager();
-        $indexName = $indexName ? : $index->getDefaultIndex();
+        $indexName = $indexName ?: $index->getDefaultIndex();
 
         return $index->openIndex($indexName);
     }
@@ -44,7 +43,7 @@ trait IndexManagement
     public static function closeIndex($indexName = null)
     {
         $index = static::getDefaultIndexManager();
-        $indexName = $indexName ? : $index->getDefaultIndex();
+        $indexName = $indexName ?: $index->getDefaultIndex();
 
         return $index->closeIndex($indexName);
     }
@@ -60,7 +59,7 @@ trait IndexManagement
     public static function putIndexSettings(array $settings, $indexName = null)
     {
         $index = static::getDefaultIndexManager();
-        $indexName = $indexName ? : $index->getDefaultIndex();
+        $indexName = $indexName ?: $index->getDefaultIndex();
 
         return $index->putSettings($settings, $indexName);
     }
@@ -75,7 +74,7 @@ trait IndexManagement
     public static function putIndexMappings($indexName = null)
     {
         $index = static::getDefaultIndexManager();
-        $indexName = $indexName ? : $index->getDefaultIndex();
+        $indexName = $indexName ?: $index->getDefaultIndex();
 
         $instance = new static;
 

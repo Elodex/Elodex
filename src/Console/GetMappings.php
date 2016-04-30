@@ -17,8 +17,8 @@ class GetMappings extends Command
      * @var string
      */
     protected $signature = 'es:get-mappings
-                            {--c|class= : Indexed model class for which the mappings should received}
-                            {--i|index= : Name of the index}
+                            {--C|class= : Indexed model class for which the mappings should received}
+                            {--I|index= : Name of the index}
                             {--dump : Print the result as a dump}';
 
     /**
@@ -58,7 +58,7 @@ class GetMappings extends Command
     {
         $class = $this->option('class');
         $dump = $this->option('dump') ? true : false;
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
         $indexTypeName = null;
 
         if (! empty($class)) {
@@ -77,17 +77,19 @@ class GetMappings extends Command
         $mappings = $this->indexManager->getMappings($indexName, $indexTypeName);
 
         if (empty($mappings)) {
-            $this->warn("No mappings found.");
+            $this->warn('No mappings found.');
+
             return 1;
         }
 
         if ($dump) {
             (new Dumper)->dump($mappings);
+
             return 0;
         }
 
         if (empty($class)) {
-            foreach ($mappings as $idx => $data) {
+            foreach ($mappings as $data) {
                 foreach ($data['mappings'] as $t => $m) {
                     $this->info("Index property mappings for type '{$t}':");
 
@@ -114,7 +116,7 @@ class GetMappings extends Command
         $rows = [];
 
         foreach ($mappings as $property => $mapping) {
-            $row = [ $property ];
+            $row = [$property];
             $row[] = Arr::get($mapping, 'type', '');
             $row[] = Arr::get($mapping, 'format', '');
             $row[] = Arr::get($mapping, 'anaylzer', '');

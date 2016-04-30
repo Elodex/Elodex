@@ -41,7 +41,7 @@ class IndexManager implements IndexClientResolverContract
      */
     public function openIndex($index = null)
     {
-        $indexName = $index ? : $this->getDefaultIndex();
+        $indexName = $index ?: $this->getDefaultIndex();
         $params = ['index' => $indexName];
 
         return $this->client->indices()->open($params);
@@ -55,7 +55,7 @@ class IndexManager implements IndexClientResolverContract
      */
     public function closeIndex($index = null)
     {
-        $indexName = $index ? : $this->getDefaultIndex();
+        $indexName = $index ?: $this->getDefaultIndex();
         $params = ['index' => $indexName];
 
         return $this->client->indices()->close($params);
@@ -71,14 +71,14 @@ class IndexManager implements IndexClientResolverContract
      */
     public function createIndex($index = null, array $settings = null, array $mappings = null)
     {
-        $indexName = $index ? : $this->getDefaultIndex();
+        $indexName = $index ?: $this->getDefaultIndex();
         $params = ['index' => $indexName];
 
-        if (!empty($settings)) {
+        if (! empty($settings)) {
             Arr::set($params, 'body.settings', $settings);
         }
 
-        if (!empty($mappings)) {
+        if (! empty($mappings)) {
             Arr::set($params, 'body.mappings', $mappings);
         }
 
@@ -93,7 +93,7 @@ class IndexManager implements IndexClientResolverContract
      */
     public function deleteIndex($index = null)
     {
-        $indexName = $index ? : $this->getDefaultIndex();
+        $indexName = $index ?: $this->getDefaultIndex();
         $params = ['index' => $indexName];
 
         return $this->client->indices()->delete($params);
@@ -108,11 +108,11 @@ class IndexManager implements IndexClientResolverContract
      */
     public function putSettings(array $settings, $index = null)
     {
-        $indexName = $index ? : $this->getDefaultIndex();
+        $indexName = $index ?: $this->getDefaultIndex();
         $params = [
             'index' => $indexName,
             'body' => [
-                'settings' => $settings
+                'settings' => $settings,
             ],
         ];
 
@@ -127,7 +127,7 @@ class IndexManager implements IndexClientResolverContract
      */
     public function getSettings($index = null)
     {
-        $indexName = $index ? : $this->getDefaultIndex();
+        $indexName = $index ?: $this->getDefaultIndex();
         $params = ['index' => $indexName];
 
         return $this->client->indices()->getSettings($params);
@@ -168,7 +168,7 @@ class IndexManager implements IndexClientResolverContract
     {
         $params = ['index' => $index];
 
-        if (!is_null($type)) {
+        if (! is_null($type)) {
             $params['type'] = $type;
         }
 
@@ -199,7 +199,7 @@ class IndexManager implements IndexClientResolverContract
     {
         $params = [
             'index' => $index,
-            'type' => implode(',', $types)
+            'type' => implode(',', $types),
         ];
 
         return $this->client->indices()->existsType($params);
@@ -241,8 +241,8 @@ class IndexManager implements IndexClientResolverContract
     /**
      * Get stats from the index.
      *
-     * @param  mixed|null $index
-     * @param  mixed|null $fields
+     * @param  string|null $index
+     * @param  string|null $fields
      * @return array
      */
     public function stats($index = null, $fields = null)
@@ -275,6 +275,26 @@ class IndexManager implements IndexClientResolverContract
         ];
 
         return $this->client->indices()->upgrade($params);
+    }
+
+    /**
+     * Run a suggestion request.
+     *
+     * @param  \Elodex\Suggest $suggest
+     * @param  string|null $index
+     * @return \Elodex\SuggestResult
+     */
+    public function suggest(Suggest $suggest, $index = null)
+    {
+        $indexName = $index ?: $this->getDefaultIndex();
+
+        $params = ['index' => $indexName];
+        $params['body'] = $suggest->toArray();
+
+        // Perform the suggest request.
+        $results = $this->client->suggest($params);
+
+        return new SuggestResult($results);
     }
 
     /**

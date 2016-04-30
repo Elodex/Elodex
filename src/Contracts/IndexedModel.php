@@ -2,8 +2,6 @@
 
 namespace Elodex\Contracts;
 
-use Elodex\Contracts\IndexedDocument;
-
 interface IndexedModel extends IndexedDocument
 {
     /**
@@ -19,6 +17,13 @@ interface IndexedModel extends IndexedDocument
      * @return mixed
      */
     public function getIndexKey();
+
+    /**
+     * Returns the indexed relationships of the model.
+     *
+     * @return array
+     */
+    public function getIndexRelations();
 
     /**
      * Get the changed document data of this model instance used for incremental

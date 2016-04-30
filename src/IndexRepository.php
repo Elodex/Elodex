@@ -4,14 +4,13 @@ namespace Elodex;
 
 use Elodex\Contracts\IndexedModel as IndexedModelContract;
 use Elodex\Contracts\IndexRepository as IndexRepositoryContract;
-use Elodex\Search;
-use Elodex\SearchResult;
+use Elodex\Contracts\IndexRepositoryScrolling as IndexRepositoryScrollingContract;
 use Elodex\Exceptions\InvalidArgumentException;
 use Elodex\Exceptions\BulkOperationException;
 use Elodex\Exceptions\MultiGetException;
 use Illuminate\Support\Collection as BaseCollection;
 
-class IndexRepository implements IndexRepositoryContract
+class IndexRepository implements IndexRepositoryContract, IndexRepositoryScrollingContract
 {
     /**
      * The client instance used for all requests.
@@ -54,21 +53,22 @@ class IndexRepository implements IndexRepositoryContract
     /**
      * Create a new index repository instance.
      *
-     * @param mixed $client
-     * @param string $modelClass
-     * @param string $indexName
+     * @param  mixed $client
+     * @param  string $modelClass
+     * @param  string $indexName
+     * @throws \Elodex\Exceptions\InvalidArgumentException
      */
     public function __construct($client, $modelClass, $indexName)
     {
-        $instance = new $modelClass;
-        if (! $instance instanceof IndexedModelContract) {
+        $model = new $modelClass;
+        if (! $model instanceof IndexedModelContract) {
             throw new InvalidArgumentException('Model class does not implement the IndexedModel interface');
         }
 
         $this->client = $client;
         $this->modelClass = $modelClass;
         $this->indexName = $indexName;
-        $this->indexTypeName = $instance->getIndexTypeName();
+        $this->indexTypeName = $model->getIndexTypeName();
     }
 
     /**
@@ -237,7 +237,6 @@ class IndexRepository implements IndexRepositoryContract
 
     /**
      * {@inheritdoc}
-     * @throws \Elodex\Exceptions\InvalidArgumentException
      */
     public function remove($model)
     {
@@ -293,7 +292,7 @@ class IndexRepository implements IndexRepositoryContract
      * @param  \Elodex\Contracts\IndexedModel|\Illuminate\Support\Collection $model
      * @return array
      */
-    public function getDocument($model, $fields = null)
+    public function getDocumentForModel($model, $fields = null)
     {
         $this->validateModelClass($model);
 
@@ -312,7 +311,7 @@ class IndexRepository implements IndexRepositoryContract
      * @param  \Illuminate\Support\Collection $collection
      * @return array
      */
-    public function getDocuments(BaseCollection $collection, $fields = null)
+    public function getDocumentsForModels(BaseCollection $collection, $fields = null)
     {
         if ($collection->isEmpty()) {
             return [];
@@ -344,21 +343,17 @@ class IndexRepository implements IndexRepositoryContract
     /**
      * {@inheritdoc}
      */
-    public function all(array $with = null, $limit = null, $offset = null)
+    public function all($limit = null)
     {
-        $search = new Search();
+        $search = (new Search())
+            ->matchAll()
+            ->sort('_doc');
 
         if (! is_null($limit)) {
             $search->setSize($limit);
         }
 
-        if (! is_null($offset)) {
-            $search->setFrom($offset);
-        }
-
-        $results = $this->search($search);
-
-        return $results->getItems($with);
+        return $this->search($search);
     }
 
     /**
@@ -383,40 +378,113 @@ class IndexRepository implements IndexRepositoryContract
     }
 
     /**
-     * Perform a search on the index repository.
-     *
-     * @param  \Elodex\Search $search
-     * @return \Elodex\SearchResult
+     * {@inheritdoc}
      */
     public function search(Search $search)
     {
-        $params = $this->getBaseParams();
+        // Build the basic query parameters.
+        $params = $search->getQueryParams();
+        $params = array_merge($params, $this->getBaseParams());
 
-        // Request the version info.
+        // Version info should be included in the result by default.
         $params['version'] = true;
 
+        // Generate the body out of the search query.
         $params['body'] = $search->toArray();
 
+        // Perform the search request.
         $results = $this->client->search($params);
 
         return new SearchResult($results, $this->modelClass);
     }
 
     /**
-     * Count the number of documents for a search.
-     *
-     * @param  \Elodex\Search $search
-     * @return int
+     * {@inheritdoc}
      */
     public function count(Search $search)
     {
-        $params = $this->getBaseParams();
+        $params = $search->getQueryParams();
+        $params = array_merge($params, $this->getBaseParams());
 
         $params['body'] = $search->toArray();
 
         $results = $this->client->count($params);
 
         return $results['count'];
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws \Elodex\Exceptions\InvalidArgumentException
+     */
+    public function scroll(Search $search, callable $callback)
+    {
+        $duration = $search->getScroll();
+
+        if (is_null($duration)) {
+            throw new InvalidArgumentException('Scroll duration missing on search query.');
+        }
+
+        // Get the first result for the scrolling request.
+        $result = $this->search($search);
+        $scrollId = $result->getScrollId();
+
+        try {
+            // Callback for the first set of results.
+            call_user_func($callback, $result);
+
+            // Check if we do have more documents than we got from the first call.
+            if (count($result) < $result->totalHits()) {
+                // Scroll through the results until we don't get any more hits.
+                while (true) {
+                    $result = $this->scrollRequest($scrollId, $duration);
+                    $scrollId = $result->getScrollId();
+
+                    // Check if we didn't get any more results.
+                    if (count($result) === 0) {
+                        break;
+                    }
+
+                    call_user_func($callback, $result);
+                }
+            }
+        } finally {
+            $this->clearScroll($scrollId);
+        }
+    }
+
+    /**
+     * Send a scrolling request for the given scrolling ID.
+     *
+     * @param  string $scrollId
+     * @param  string $duration
+     * @return \Elodex\SearchResult
+     */
+    protected function scrollRequest($scrollId, $duration)
+    {
+        $params = [
+            'scroll_id' => $scrollId,
+            'scroll' => $duration,
+        ];
+
+        $results = $this->client->scroll($params);
+
+        return new SearchResult($results, $this->modelClass);
+    }
+
+    /**
+     * Clear the search context of a scrolling search.
+     *
+     * @param  string $scrollId
+     * @return array
+     */
+    protected function clearScroll($scrollId)
+    {
+        $params = ['scroll_id' => $scrollId];
+
+        $results = $this->client->clearScroll($params);
+
+        return $results;
     }
 
     /**
@@ -544,6 +612,7 @@ class IndexRepository implements IndexRepositoryContract
     {
         $params = $this->getBaseParams();
         $params['id'] = $model->getIndexKey();
+
         return $params;
     }
 
@@ -560,7 +629,7 @@ class IndexRepository implements IndexRepositoryContract
         return [
             '_index' => $this->indexName,
             '_type' => $this->indexTypeName,
-            '_id' => $model->getIndexKey()
+            '_id' => $model->getIndexKey(),
         ];
     }
 

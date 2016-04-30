@@ -15,7 +15,7 @@ class GetStats extends Command
      * @var string
      */
     protected $signature = 'es:get-stats
-                            {--i|index= : Name of the index}
+                            {--I|index= : Name of the index}
                             {--dump : Print the result as a dump}';
 
     /**
@@ -52,7 +52,7 @@ class GetStats extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
         $dump = $this->option('dump') ? true : false;
 
         $stats = $this->indexManager->stats($indexName);
@@ -77,7 +77,7 @@ class GetStats extends Command
         $this->line("  {$shardStats['total']} total, {$shardStats['successful']} successful, {$shardStats['failed']} failed");
 
         $allIndices = $stats['_all'];
-        $this->info("All Indices");
+        $this->info('All Indices');
 
         $totalStats = $allIndices['total'];
 

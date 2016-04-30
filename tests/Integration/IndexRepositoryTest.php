@@ -78,7 +78,7 @@ class IndexRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertArraySubset(['_id' => $indexedModel->getIndexKey()], $results);
         $this->assertArraySubset(['created' => true], $results);
 
-        $results = $this->indexRepository->getDocument($indexedModel);
+        $results = $this->indexRepository->getDocumentForModel($indexedModel);
         $this->assertArrayHasKey('_source', $results);
         $this->assertEquals($indexedModel->toIndexDocument(), $results['_source']);
     }
@@ -93,7 +93,8 @@ class IndexRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->indexRepository->add($items);
 
         $results = $this->indexRepository->all();
-        $resultIds = array_keys($results->all());
+
+        $resultIds = array_keys($results->getDocuments()->all());
 
         $this->assertCount(3, $results);
         $this->assertEmpty(array_diff([1, 2, 3], $resultIds));

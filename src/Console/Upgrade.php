@@ -14,7 +14,7 @@ class Upgrade extends Command
      * @var string
      */
     protected $signature = 'es:upgrade
-                            {--i|index= : Comma separated list of index names}
+                            {--I|index= : Comma separated list of index names}
                             {--W|wait : Wait for the operation to complete}
                             {--dump : Print the result as a dump}';
 
@@ -52,7 +52,7 @@ class Upgrade extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : '_all';
+        $indexName = $this->option('index') ?: '_all';
         $wait = $this->option('wait') ? true : false;
         $dump = $this->option('dump') ? true : false;
 

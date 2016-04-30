@@ -176,6 +176,7 @@ class IndexMappingTest extends \PHPUnit_Framework_TestCase
 
         $mappings = $parent->getIndexMappingProperties();
 
+        // Make sure the automatically determined mappings of the relations are correct.
         $this->assertArrayHasKey('related', $mappings);
         $this->assertArrayHasKey('type', $mappings['related']);
         $this->assertArrayHasKey('properties', $mappings['related']);
@@ -183,7 +184,10 @@ class IndexMappingTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('nested', $mappings['related']['type']);
 
         $relatedPropertyMappings = array_keys($mappings['related']['properties']);
+        // Check for 'casts' attributes on the related mapping.
         $this->assertEmpty(array_diff(['foo', 'bar'], $relatedPropertyMappings), 'Missing related property mappings');
+        // Check for custom attributes on the related mapping.
+        $this->assertContains('foo_on_related', $relatedPropertyMappings);
     }
 
     public function testNestedRelationMappings()
@@ -196,13 +200,21 @@ class IndexMappingTest extends \PHPUnit_Framework_TestCase
         $mappings = $parent->getIndexMappingProperties();
 
         $this->assertArrayHasKey('related', $mappings);
-        $nestedPropertyMappings = Arr::get($mappings, 'related.properties.related.properties');
-        $this->assertNotNull($nestedPropertyMappings);
 
-        $customBarMapping = Arr::get($parent->getCustomIndexMappingProperties(), 'related.properties.bar');
-        $this->assertEquals($customBarMapping, Arr::get($mappings, 'related.properties.bar'));
+        $this->assertNotNull(Arr::get($mappings, 'related.type'));
+        $this->assertNotNull(Arr::get($mappings, 'related.properties'));
+        $this->assertEmpty(array_diff(['foo', 'bar'], array_keys(Arr::get($mappings, 'related.properties'))));
+
+        $this->assertNotNull(Arr::get($mappings, 'related.properties.related.type'));
+        $this->assertNotNull(Arr::get($mappings, 'related.properties.related.properties'));
+        $this->assertEmpty(array_diff(['foo', 'bar'], array_keys(Arr::get($mappings, 'related.properties.related.properties'))));
+
+        $customChildMapping = Arr::get($parent->related->getCustomIndexMappingProperties(), 'foo_on_related');
+        $this->assertEquals($customChildMapping, Arr::get($mappings, 'related.properties.foo_on_related'));
+
+        $customNestedChildMapping = Arr::get($parent->related->related->getCustomIndexMappingProperties(), 'foo_on_related');
+        $this->assertEquals($customNestedChildMapping, Arr::get($mappings, 'related.properties.related.properties.foo_on_related'));
     }
-
 }
 
 class IndexMappingSimpleModel extends MappingModel
@@ -213,21 +225,13 @@ class IndexMappingSimpleModel extends MappingModel
 class IndexMappingParentModel extends MappingModel
 {
     protected $table = 'phpunit_IndexMappingParentModel';
-    protected $indexMappingProperties = [
-        'related' => [
-            'properties' => [
-                'bar' => [
-                    'type' => 'string',
-                    'analyzer' => 'simple',
-                ],
-            ],
-        ],
-    ];
+    protected $indexMappingProperties = [];
 
     public function related()
     {
         $mock = m::mock(\Illuminate\Database\Eloquent\Relations\Relation::class);
         $mock->shouldReceive('getRelated')->andReturn(new IndexMappingRelatedModel);
+        $mock->shouldReceive('getResults')->andReturn(new IndexMappingRelatedModel);
 
         return $mock;
     }
@@ -240,11 +244,18 @@ class IndexMappingRelatedModel extends MappingModel
         'foo' => 'integer',
         'bar' => 'string',
     ];
+    protected $indexMappingProperties = [
+        'foo_on_related' => [
+            'type' => 'string',
+            'analyzer' => 'simple',
+        ],
+    ];
 
     public function related()
     {
         $mock = m::mock(\Illuminate\Database\Eloquent\Relations\Relation::class);
         $mock->shouldReceive('getRelated')->andReturn(new IndexMappingRelatedModel);
+        $mock->shouldReceive('getResults')->andReturn(new IndexMappingRelatedModel);
 
         return $mock;
     }

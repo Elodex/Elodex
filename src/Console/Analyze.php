@@ -16,9 +16,9 @@ class Analyze extends Command
     protected $signature = 'es:analyze
                             {analyzer : Analyzer used to analyze the given text}
                             {text : Text to analyze}
-                            {--f|filter= : A comma-separated list of filters to use for the analysis}
-                            {--t|tokenizer= : The name of the tokenizer to use for the analysis}
-                            {--i|index= : Name of the index}
+                            {--F|filter= : A comma-separated list of filters to use for the analysis}
+                            {--T|tokenizer= : The name of the tokenizer to use for the analysis}
+                            {--I|index= : Name of the index}
                             {--dump : Print the result as a dump}';
 
     /**
@@ -58,7 +58,7 @@ class Analyze extends Command
         $analyzer = $this->argument('analyzer');
         $text = $this->argument('text');
 
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
         $dump = $this->option('dump') ? true : false;
 
         $filters = $this->option('filter') ? explode(',', $this->option('filter')) : [];

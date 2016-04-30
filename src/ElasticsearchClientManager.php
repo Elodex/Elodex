@@ -42,6 +42,7 @@ class ElasticsearchClientManager implements IndexClientResolverContract
     {
         // Use the Elasticsearch ClientBuilder helper to create the search client
         $config = $this->createLoggerConfig($config);
+
         return \Elasticsearch\ClientBuilder::fromConfig($config);
     }
 

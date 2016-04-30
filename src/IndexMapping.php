@@ -49,8 +49,8 @@ trait IndexMapping
             $this->getDefaultIndexMappingProperties($model)
         );
 
-        // Custom mappings may overwrite any mapping.
-        return array_replace_recursive($merged, $customMappings);
+        // Custom mappings may overwrite any previously defined mapping.
+        return array_replace($merged, $customMappings);
     }
 
     /**
@@ -106,15 +106,15 @@ trait IndexMapping
             return [];
         }
 
-        // Walk through all relations of the specified model to build the needed mappings
+        // Walk through all relations of the specified model to build the needed mappings.
         $mappings = [];
 
         foreach ($indexRelations as $relation) {
-            // Check for a nested relation
+            // Check for a nested relation.
             if (($p = strpos($relation, '.')) !== false) {
                 // Extract the first relation from the dot syntax and the remainder
-                // which are the child relations
-                $relatedIndexRelations = [substr($relation, $p+1)];
+                // which are the child relations.
+                $relatedIndexRelations = [substr($relation, $p + 1)];
                 $relation = substr($relation, 0, $p);
             } else {
                 $relatedIndexRelations = [];
@@ -207,7 +207,7 @@ trait IndexMapping
      *
      * @param  \Illuminate\Database\Eloquent\Model $model
      * @param  string $key
-     * @return string
+     * @return string|null
      */
     protected function getIndexAttributeType(BaseModel $model, $key)
     {
@@ -242,7 +242,9 @@ trait IndexMapping
                 return 'object';
 
             default:
-                return null;
+                break;
         }
+
+        return null;
     }
 }

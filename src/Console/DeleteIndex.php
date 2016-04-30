@@ -13,7 +13,7 @@ class DeleteIndex extends Command
      * @var string
      */
     protected $signature = 'es:delete-index
-                            {--i|index= : The name of the index to delete}
+                            {--I|index= : The name of the index to delete}
                             {--force : Force deletion without prompt}';
 
     /**
@@ -50,7 +50,7 @@ class DeleteIndex extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ? : $this->indexManager->getDefaultIndex();
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
         $force = $this->option('force') ? true : false;
 
         if ($force || $this->confirm("Do you really want to delete the index '{$indexName}' ? [y|N]")) {
