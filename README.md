@@ -46,12 +46,12 @@ This project uses the [Gitflow branching model][gitflow]:
 
 Elodex can be directly added to your project via Composer:
 ```bash
-$ composer require "elodex/elodex=~1.0"
+$ composer require "elodex/elodex=~1.1"
 ```
 Or you can manually add the required entry to your composer.json file in the `require` section :
 ```json
 "require": {
-  "elodex/elodex": "~1.0"
+  "elodex/elodex": "~1.1"
 }
 ```
 

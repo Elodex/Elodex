@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1 - _under development_ :construction: :beetle:
+*TODO*
+
+
 ## Version 1.0
 - [Scrolling][Elodex Scrolling] added.
 - [Highlighting][Elodex Highlighting] support.
@@ -9,6 +13,7 @@
 - The `getItems` method on the `SearchResult` class was renamed to `getModels`.
 - The `all` method on the index repository no longer returns models but a search result instance.
 - New command `php artisan make:es:sync-handler` added to generate a default implementation for index synchronizations of a model class.
+
 
 ## Version 0.9
 - First pre-release.
