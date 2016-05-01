@@ -29,4 +29,16 @@ return [
     */
     'default_index' => 'laravel_elodex_index',
 
+    /*
+      |--------------------------------------------------------------------------
+      | Index Analyzers
+      |--------------------------------------------------------------------------
+      |
+      | Analyzers added to the ElasticSearch index during index creation with
+      | the 'es:create-index' command.
+      |
+     */
+    'analyzer' => [
+    ],
+
 ];

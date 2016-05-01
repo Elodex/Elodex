@@ -8,11 +8,11 @@ use Illuminate\Support\Arr;
 class IndexManager implements IndexClientResolverContract
 {
     /**
-     * Default index name to use when no index is specified.
+     * The Elodex configuration used for the index manager.
      *
-     * @var string
+     * @var array
      */
-    protected $defaultIndex;
+    protected $config;
 
     /**
      * The Elasticsearch client instance.
@@ -25,12 +25,12 @@ class IndexManager implements IndexClientResolverContract
      * Create a new index manager instance.
      *
      * @param mixed $client
-     * @param string $defaultIndex
+     * @param array $config
      */
-    public function __construct($client, $defaultIndex = 'default')
+    public function __construct($client, array $config)
     {
-        $this->defaultIndex = $defaultIndex;
         $this->client = $client;
+        $this->config = $config;
     }
 
     /**
@@ -65,14 +65,22 @@ class IndexManager implements IndexClientResolverContract
      * Create a new search index.
      *
      * @param  string|null $index
-     * @param  array|null $settings
+     * @param  array $settings
      * @param  array|null $mappings
      * @return array
      */
-    public function createIndex($index = null, array $settings = null, array $mappings = null)
+    public function createIndex($index = null, array $settings = [], array $mappings = null)
     {
         $indexName = $index ?: $this->getDefaultIndex();
         $params = ['index' => $indexName];
+
+        // Add global analyzers to the settings.
+        $analyzer = $this->getGlobalAnalyzers();
+        if (! empty($analyzer)) {
+            $settings = array_merge($settings, [
+                'analysis' => ['analyzer' => $analyzer],
+            ]);
+        }
 
         if (! empty($settings)) {
             Arr::set($params, 'body.settings', $settings);
@@ -300,7 +308,7 @@ class IndexManager implements IndexClientResolverContract
     /**
      * Return the underlying client instance used for all queries.
      *
-     * @return \Elasticsearch\Client
+     * @return mixed
      */
     public function getClient()
     {
@@ -314,6 +322,16 @@ class IndexManager implements IndexClientResolverContract
      */
     public function getDefaultIndex()
     {
-        return $this->defaultIndex;
+        return Arr::get($this->config, 'default_index', 'default');
+    }
+
+    /**
+     * Get the global Elasticsearch analyzers.
+     *
+     * @return array|null
+     */
+    public function getGlobalAnalyzers()
+    {
+        return Arr::get($this->config, 'analyzer', null);
     }
 }

@@ -1,10 +1,13 @@
 # Changelog
 
-## Version 1.1 - _under development_ :construction: :beetle:
+## Version 2.0 - _under development_ :construction: :beetle:
 - New seeding command `php artisan es:seed` added to seed models to the index.
 - Index deletion command now only prompts for confirmation in production environments.
 - Index creation command now prompts for confirmation if the `--reset` option is specified in a production environment.
+- Index creation command now accepts a comma separated `--models` parameter to automatically add property mappings. Note that the signature of the `createIndex` changed, any child class needs to adapt to the new method and the new optional parameter.
 - Short parameter version of `--reset` for the index creation command removed.
+- Global analyzers can now be set in the Elodex configuration and will be automatically added during index creation.
+- New Command `es:get-settings` to print index settings.
 
 
 ## Version 1.0
