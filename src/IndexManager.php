@@ -27,7 +27,7 @@ class IndexManager implements IndexClientResolverContract
      * @param mixed $client
      * @param array $config
      */
-    public function __construct($client, array $config)
+    public function __construct($client, array $config = [])
     {
         $this->client = $client;
         $this->config = $config;
