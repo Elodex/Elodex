@@ -3,10 +3,13 @@
 namespace Elodex\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
 use Elodex\IndexManager;
 
 class CreateIndex extends Command
 {
+    use ConfirmableTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -16,7 +19,8 @@ class CreateIndex extends Command
                             {--I|index= : The name of the index to create}
                             {--S|shards= : Number of shards}
                             {--R|replicas= : Number of replicas}
-                            {--F|reset : Reset index if it already exists}';
+                            {--reset : Reset index if it already exists}
+                            {--force : Force the operation to run when in production}';
 
     /**
      * The console command description.
@@ -56,10 +60,10 @@ class CreateIndex extends Command
         $reset = $this->option('reset') ?: false;
 
         if ($this->indexManager->indicesExist([$indexName])) {
-            if ($reset) {
+            if ($reset && $this->confirmToProceed()) {
                 $this->resetIndex($indexName);
             } else {
-                $this->error("Index '{$indexName}' already exists, exiting. Use --reset to force the creation of a new index.");
+                $this->error("Index '{$indexName}' already exists, exiting. Use --reset to replace an existing new index.");
 
                 return 1;
             }

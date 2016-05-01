@@ -1,7 +1,10 @@
 # Changelog
 
 ## Version 1.1 - _under development_ :construction: :beetle:
-*TODO*
+- New seeding command `php artisan es:seed` added to seed models to the index.
+- Index deletion command now only prompts for confirmation in production environments.
+- Index creation command now prompts for confirmation if the `--reset` option is specified in a production environment.
+- Short parameter version of `--reset` for the index creation command removed.
 
 
 ## Version 1.0

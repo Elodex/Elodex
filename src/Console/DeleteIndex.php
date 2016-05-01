@@ -3,10 +3,13 @@
 namespace Elodex\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
 use Elodex\IndexManager;
 
 class DeleteIndex extends Command
 {
+    use ConfirmableTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -14,7 +17,7 @@ class DeleteIndex extends Command
      */
     protected $signature = 'es:delete-index
                             {--I|index= : The name of the index to delete}
-                            {--force : Force deletion without prompt}';
+                            {--force : Force the operation to run when in production}';
 
     /**
      * The console command description.
@@ -50,13 +53,14 @@ class DeleteIndex extends Command
      */
     public function handle()
     {
-        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
-        $force = $this->option('force') ? true : false;
-
-        if ($force || $this->confirm("Do you really want to delete the index '{$indexName}' ? [y|N]")) {
-            $this->indexManager->deleteIndex($indexName);
-
-            $this->info("Index '{$indexName}' successfully deleted.");
+        if (! $this->confirmToProceed()) {
+            return 1;
         }
+
+        $indexName = $this->option('index') ?: $this->indexManager->getDefaultIndex();
+
+        $this->indexManager->deleteIndex($indexName);
+
+        $this->info("Index '{$indexName}' successfully deleted.");
     }
 }

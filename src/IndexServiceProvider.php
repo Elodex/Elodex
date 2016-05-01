@@ -12,6 +12,7 @@ use Elodex\Console\GetStats;
 use Elodex\Console\Upgrade;
 use Elodex\Console\Analyze;
 use Elodex\Console\MakeSyncHandler;
+use Elodex\Console\Seed;
 
 class IndexServiceProvider extends ServiceProvider
 {
@@ -135,6 +136,9 @@ class IndexServiceProvider extends ServiceProvider
         $this->app->singleton(Analyze::class, function () use ($indexManager) {
             return new Analyze($indexManager);
         });
+        $this->app->singleton(Seed::class, function () use ($indexManager) {
+            return new Seed($indexManager);
+        });
 
         $this->commands(
             OpenIndex::class,
@@ -145,6 +149,7 @@ class IndexServiceProvider extends ServiceProvider
             GetStats::class,
             Upgrade::class,
             Analyze::class,
+            Seed::class,
             MakeSyncHandler::class
         );
     }
