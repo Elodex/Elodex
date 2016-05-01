@@ -38,7 +38,6 @@ class MakeSyncHandler extends GeneratorCommand
     protected $listenerPostfix = 'IndexSyncHandler';
 
     /**
-    /**
      * Execute the console command.
      *
      * @return void
@@ -95,7 +94,7 @@ class MakeSyncHandler extends GeneratorCommand
      */
     protected function getListenerClass($name)
     {
-        return class_basename($name) . $this->listenerPostfix;
+        return class_basename($name).$this->listenerPostfix;
     }
 
     /**
