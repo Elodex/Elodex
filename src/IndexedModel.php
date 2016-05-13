@@ -207,11 +207,8 @@ trait IndexedModel
         // Make sure all relations which may have been loaded and which
         // shouldn't be added to the document are being hidden.
         $loadedRelations = array_keys($this->relations);
-        if(isset($this->indexRelations)){
-            $hiddenRelations = array_diff($loadedRelations, $this->indexRelations);
-        }else{
-            $hiddenRelation =  $loadedRelations;
-        }
+
+        (isset($this->indexRelations)? $hiddenRelations = array_diff($loadedRelations, $this->indexRelations):$hiddenRelations =&$loadedRelations);
 
         if (empty($hiddenRelations)) {
             return;
@@ -241,6 +238,8 @@ trait IndexedModel
         if (! empty($this->indexRelations) && isset($this->indexRelations)) {
             // Don't load already loaded relations
             $this->load(array_diff($this->indexRelations, array_keys($this->relations)));
+        }else{
+            $this->load(array_keys($this->relations));
         }
     }
 
