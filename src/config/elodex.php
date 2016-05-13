@@ -3,12 +3,12 @@
 return [
     /*
       |--------------------------------------------------------------------------
-      | Custom Elasticsearch Client Configuration
+      | Elasticsearch Client Configuration
       |--------------------------------------------------------------------------
       |
-      | This array will be passed to the Elasticsearch client instance.
+      | These options will be passed to the Elasticsearch client instance.
       |
-      | More more info about configuration options visit:
+      | For more info about configuration options visit:
       | http://www.elasticsearch.org/guide/en/elasticsearch/client/php-api/current/_configuration.html
       |
     */
@@ -24,9 +24,21 @@ return [
       | Default Index Name
       |--------------------------------------------------------------------------
       |
-      | This is the default index name Elodex will use for all indexed models.
+      | The default index name used by all indexed models.
       |
     */
-    'default_index' => 'my_custom_index_name',
+    'default_index' => 'laravel_elodex_index',
+
+    /*
+      |--------------------------------------------------------------------------
+      | Index Analyzers
+      |--------------------------------------------------------------------------
+      |
+      | Analyzers added to the ElasticSearch index during index creation with
+      | the 'es:create-index' command.
+      |
+     */
+    'analyzer' => [
+    ],
 
 ];

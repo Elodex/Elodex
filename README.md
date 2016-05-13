@@ -46,12 +46,12 @@ This project uses the [Gitflow branching model][gitflow]:
 
 Elodex can be directly added to your project via Composer:
 ```bash
-$ composer require "elodex/elodex=~1.0"
+$ composer require "elodex/elodex=~2.0"
 ```
 Or you can manually add the required entry to your composer.json file in the `require` section :
 ```json
 "require": {
-  "elodex/elodex": "~1.0"
+  "elodex/elodex": "~2.0"
 }
 ```
 
@@ -172,5 +172,5 @@ Please see the [License File](LICENSE.txt) for further information.
 [Elasticsearch]: https://www.elastic.co/guide/ "Elasticsearch Docs"
 [Elasticsearch terms]: https://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html "Elasticsearch Glossary of terms"
 [Elodex]: https://github.com/elodex/Elodex "Elodex"
-[Elodex Documentation]: https://github.com/Elodex/Documentation "Elodex Documentation"
+[Elodex Documentation]: https://github.com/Elodex/Documentation/tree/develop "Elodex Documentation"
 [Elasticsearch PHP Client]: https://github.com/elastic/elasticsearch-php "Official PHP low-level client for Elasticsearch"

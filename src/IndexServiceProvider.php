@@ -9,9 +9,11 @@ use Elodex\Console\DeleteIndex;
 use Elodex\Console\CreateIndex;
 use Elodex\Console\GetMappings;
 use Elodex\Console\GetStats;
+use Elodex\Console\GetSettings;
 use Elodex\Console\Upgrade;
 use Elodex\Console\Analyze;
 use Elodex\Console\MakeSyncHandler;
+use Elodex\Console\Seed;
 
 class IndexServiceProvider extends ServiceProvider
 {
@@ -77,9 +79,9 @@ class IndexServiceProvider extends ServiceProvider
     {
         $this->app->singleton(IndexManager::class, function ($app) {
             $client = $app[ElasticsearchClientManager::class];
-            $defaultIndex = $app['config']->get('elodex.default_index', 'default');
+            $config = $app['config']->get('elodex');
 
-            return new IndexManager($client, $defaultIndex);
+            return new IndexManager($client, $config);
         });
 
         $this->app->alias(IndexManager::class, 'elodex.index');
@@ -129,11 +131,17 @@ class IndexServiceProvider extends ServiceProvider
         $this->app->singleton(GetStats::class, function () use ($indexManager) {
             return new GetStats($indexManager);
         });
+        $this->app->singleton(GetSettings::class, function () use ($indexManager) {
+            return new GetSettings($indexManager);
+        });
         $this->app->singleton(Upgrade::class, function () use ($indexManager) {
             return new Upgrade($indexManager);
         });
         $this->app->singleton(Analyze::class, function () use ($indexManager) {
             return new Analyze($indexManager);
+        });
+        $this->app->singleton(Seed::class, function () use ($indexManager) {
+            return new Seed($indexManager);
         });
 
         $this->commands(
@@ -143,8 +151,10 @@ class IndexServiceProvider extends ServiceProvider
             DeleteIndex::class,
             GetMappings::class,
             GetStats::class,
+            GetSettings::class,
             Upgrade::class,
             Analyze::class,
+            Seed::class,
             MakeSyncHandler::class
         );
     }

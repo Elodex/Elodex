@@ -5,11 +5,11 @@ namespace Elodex;
 class IndexRepositoryManager
 {
     /**
-     * Index name used for the index repositories.
+     * Default index name used for the index repositories.
      *
      * @var string
      */
-    protected $indexName;
+    protected $defaultIndexName;
 
     /**
      * The Elasticsearch client instance.
@@ -29,35 +29,40 @@ class IndexRepositoryManager
      * Create a new IndexRepository manager instance.
      *
      * @param mixed $client
-     * @param string $indexName
+     * @param string $defaultIndexName
      */
-    public function __construct($client, $indexName)
+    public function __construct($client, $defaultIndexName)
     {
         $this->client = $client;
-        $this->indexName = $indexName;
+        $this->defaultIndexName = $defaultIndexName;
     }
 
     /**
      * Attempt to get the index repository from the local cache.
      *
      * @param  string  $class
+     * @param  string|null  $index
      * @return \Elodex\IndexRepository
      */
-    public function repository($class)
+    public function repository($class, $index = null)
     {
-        return isset($this->repositories[$class])
-                    ? $this->repositories[$class]
-                    : $this->repositories[$class] = $this->createIndexRepository($class);
+        $index = $index ?: $this->defaultIndexName;
+        $repositoryId = "{$index}::{$class}";
+
+        return isset($this->repositories[$repositoryId])
+                    ? $this->repositories[$repositoryId]
+                    : $this->repositories[$repositoryId] = $this->createIndexRepository($class, $index);
     }
 
     /**
      * Create a new index repository for the model class.
      *
      * @param  string  $class
+     * @param  string  $index
      * @return \Elodex\IndexRepository
      */
-    protected function createIndexRepository($class)
+    protected function createIndexRepository($class, $index)
     {
-        return new IndexRepository($this->client, $class, $this->indexName);
+        return new IndexRepository($this->client, $class, $index);
     }
 }
