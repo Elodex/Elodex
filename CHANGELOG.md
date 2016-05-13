@@ -1,13 +1,16 @@
 # Changelog
 
 ## Version 2.0 - _under development_ :construction: :beetle:
-- New seeding command `php artisan es:seed` added to seed models to the index.
-- Index deletion command now only prompts for confirmation in production environments.
-- Index creation command now prompts for confirmation if the `--reset` option is specified in a production environment.
-- Index creation command now accepts a comma separated `--models` parameter to automatically add property mappings. Note that the signature of the `createIndex` changed, any child class needs to adapt to the new method and the new optional parameter.
-- Short parameter version of `--reset` for the index creation command removed.
-- Global analyzers can now be set in the Elodex configuration and will be automatically added during index creation.
-- New Command `es:get-settings` to print index settings.
+- New [seeding command][Elodex Seeding Command] added to seed models to the index.
+- [Index deletion command][Elodex Index Deletion Command] now only prompts for confirmation in production environments.
+- [Index creation command][Elodex Index Creation Command] now prompts for confirmation if the `--reset` option is specified in a production environment.
+- [Index creation command][Elodex Index Creation Command] now accepts a comma separated `--models` parameter to automatically add property mappings. Note that the signature of the `createIndex` changed, any child class needs to adapt to the new method and the new optional parameter.
+- Short parameter version of `--reset` for the [index creation command][Elodex Index Creation Command] removed.
+- [Global analyzers][Elodex Analyzers] can now be set in the Elodex configuration and will be automatically added during index creation.
+- [New Command][Elodex Index Settings Command] `es:get-settings` to print index settings.
+- `count` method added to index search query.
+- *TODO:* Multiple index repositories per class.
+- *TODO:* `object` type for relationships.
 
 
 ## Version 1.0
@@ -29,3 +32,8 @@
 [Elodex Highlighting]: https://github.com/Elodex/Documentation/blob/develop/07_Highlighting.md "Elodex Highlighting"
 [Elodex Suggestions]: https://github.com/Elodex/Documentation/blob/develop/09_Suggestions.md "Elodex Suggestions"
 [Elodex Search]: https://github.com/Elodex/Documentation/blob/develop/06_Search.md "Elodex Search"
+[Elodex Seeding Command]: https://github.com/Elodex/Documentation/blob/develop/10_Artisan-Commands.md#seeding "Elodex Seeding Command"
+[Elodex Index Creation Command]: https://github.com/Elodex/Documentation/blob/develop/10_Artisan-Commands.md#index-creation "Elodex Index Creation Command"
+[Elodex Index Deletion Command]: https://github.com/Elodex/Documentation/blob/develop/10_Artisan-Commands.md#index-deletion "Elodex Index Deletion Command"
+[Elodex Index Settings Command]: https://github.com/Elodex/Documentation/blob/develop/10_Artisan-Commands.md#index-settings "Elodex Index Settings Command"
+[Elodex Analyzers]: https://github.com/Elodex/Documentation/blob/develop/02_Index-Management.md#analyzers "Elodex Analysers"
