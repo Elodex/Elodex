@@ -207,7 +207,8 @@ trait IndexedModel
         // Make sure all relations which may have been loaded and which
         // shouldn't be added to the document are being hidden.
         $loadedRelations = array_keys($this->relations);
-        $hiddenRelations = array_diff($loadedRelations, $this->indexRelations);
+       
+        (isset($this->indexRelations)? $hiddenRelations = array_diff($loadedRelations, $this->indexRelations):$hiddenRelations =&$loadedRelations);
 
         if (empty($hiddenRelations)) {
             return;
@@ -234,9 +235,11 @@ trait IndexedModel
         // Do not load any index relations if the indicating property is null on
         // the model instance. This does give subclasses the opportunity to disable
         // this functionality without having to override the method.
-        if (! empty($this->indexRelations)) {
+        if (! empty($this->indexRelations) && isset($this->indexRelations)) {
             // Don't load already loaded relations
             $this->load(array_diff($this->indexRelations, array_keys($this->relations)));
+        }else{
+            $this->load(array_keys($this->relations));
         }
     }
 
