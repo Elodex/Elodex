@@ -107,6 +107,16 @@ class Search
     }
 
     /**
+     * Count the results for the search on the index repository of the model.
+     *
+     * @return \Elodex\SearchResult
+     */
+    public function count()
+    {
+        return $this->getModel()->getIndexRepository()->count($this);
+    }
+
+    /**
      * Add a term query to the search.
      *
      * @param  string $field
