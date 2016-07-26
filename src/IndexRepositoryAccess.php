@@ -2,10 +2,22 @@
 
 namespace Elodex;
 
+use Elodex\Search;
 use Illuminate\Container\Container;
 
 trait IndexRepositoryAccess
 {
+    /**
+     * Return the index repository used for this model instance.
+     *
+     * @return \Elodex\IndexRepository
+     */
+    public function getIndexRepository()
+    {
+        $app = Container::getInstance();
+        return $app->make('elodex.repository', [])->repository(get_class($this));
+    }
+
     /**
      * Add the model's document to the index.
      *
@@ -47,27 +59,13 @@ trait IndexRepositoryAccess
     }
 
     /**
-     * Return an index repository used for this model instance.
+     * Add or replace the model's documents to the index.
      *
-     * @param  string|null $index
-     * @return \Elodex\IndexRepository
+     * @return array
      */
-    public function getIndexRepository($index = null)
+    public function saveBulkToIndex()
     {
-        return static::getClassIndexRepository($index);
-    }
-
-    /**
-     * Return an index repository used for this model class.
-     *
-     * @param  string|null $index
-     * @return \Elodex\IndexRepository
-     */
-    public static function getClassIndexRepository($index = null)
-    {
-        $app = Container::getInstance();
-
-        return $app->make('elodex.repository')->repository(get_called_class(), $index);
+        return $this->getIndexRepository()->saveCollection($this);
     }
 
     /**
@@ -82,6 +80,17 @@ trait IndexRepositoryAccess
         $search->setModel($this);
 
         return $search;
+    }
+
+    /**
+     * Return the index repository used for this model class.
+     *
+     * @return \Elodex\IndexRepository
+     */
+    public static function getClassIndexRepository()
+    {
+        $app = Container::getInstance();
+        return $app->make('elodex.repository', [])->repository(get_called_class());
     }
 
     /**
