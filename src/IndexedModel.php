@@ -76,7 +76,7 @@ trait IndexedModel
     {
         $documents = [];
 
-        if(isset($this->indexRelations)){
+        if (isset($this->indexRelations)) {
             foreach ($this->indexRelations as $relation) {
                 $related = $this->relations[$relation];
 
@@ -238,7 +238,7 @@ trait IndexedModel
         if (! empty($this->indexRelations) && isset($this->indexRelations)) {
             // Don't load already loaded relations
             $this->load(array_diff($this->indexRelations, array_keys($this->relations)));
-        }else{
+        } else {
             $this->load(array_keys($this->relations));
         }
     }
