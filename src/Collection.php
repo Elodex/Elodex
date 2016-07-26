@@ -73,4 +73,21 @@ class Collection extends BaseCollection
 
         return $this;
     }
+
+    /**
+     * Add or replace the items in the index.
+     *
+     * @param  array $result
+     * @return $this
+     */
+    public function saveBulkToIndex(&$result = null)
+    {
+        if ($this->isEmpty()) {
+            return $this;
+        }
+
+        $result = $this->first()->getIndexRepository()->saveCollection($this);
+
+        return $this;
+    }
 }
