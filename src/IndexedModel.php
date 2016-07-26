@@ -2,6 +2,8 @@
 
 namespace Elodex;
 
+use Elodex\IndexManagement;
+use Elodex\IndexRepositoryAccess;
 use Elodex\Contracts\IndexedDocument;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
@@ -11,12 +13,6 @@ trait IndexedModel
     use IndexManagement,
         IndexRepositoryAccess;
 
-    /**
-     * The relationships that should be added to the index document.
-     *
-     * @var array
-     */
-    protected $indexRelations = [];
 
     /**
      * The version of the model's document in the index.
@@ -51,14 +47,6 @@ trait IndexedModel
     /**
      * {@inheritdoc}
      */
-    public function getIndexRelations()
-    {
-        return $this->indexRelations;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function toIndexDocument()
     {
         // Temporarily disable all whitelisting and blacklisting for relations.
@@ -88,38 +76,41 @@ trait IndexedModel
     {
         $documents = [];
 
-        foreach ($this->indexRelations as $relation) {
-            $related = $this->relations[$relation];
+        if (isset($this->indexRelations)) {
+            foreach ($this->indexRelations as $relation) {
+                $related = $this->relations[$relation];
 
-            // Check if the related instance implements the indexed document
-            // interface to create a document representation.
-            if ($related instanceof IndexedDocument) {
-                $document = $related->toIndexDocument();
+                // Check if the related instance implements the indexed document
+                // interface to create a document representation.
+                if ($related instanceof IndexedDocument) {
+                    $document = $related->toIndexDocument();
+                }
+
+                // Fallback to the Arrayable interface and its toArray method.
+                elseif ($related instanceof Arrayable) {
+                    $document = $related->toArray();
+                }
+
+                // If the value is null, we'll still go ahead and set it in this list of
+                // attributes since null is used to represent empty relationships if
+                // if it a has one or belongs to type relationships on the models.
+                elseif (is_null($related)) {
+                    $document = $related;
+                }
+
+                // Make sure the relation name is snake-cased if needed.
+                if (static::$snakeAttributes) {
+                    $relation = Str::snake($relation);
+                }
+
+                if (isset($relation) || is_null($related)) {
+                    $documents[$relation] = $document;
+                }
+
+                unset($document);
             }
-
-            // Fallback to the Arrayable interface and its toArray method.
-            elseif ($related instanceof Arrayable) {
-                $document = $related->toArray();
-            }
-
-            // If the value is null, we'll still go ahead and set it in this list of
-            // attributes since null is used to represent empty relationships if
-            // if it a has one or belongs to type relationships on the models.
-            elseif (is_null($related)) {
-                $document = $related;
-            }
-
-            // Make sure the relation name is snake-cased if needed.
-            if (static::$snakeAttributes) {
-                $relation = Str::snake($relation);
-            }
-
-            if (isset($relation) || is_null($related)) {
-                $documents[$relation] = $document;
-            }
-
-            unset($document);
         }
+
 
         return $documents;
     }
@@ -216,7 +207,8 @@ trait IndexedModel
         // Make sure all relations which may have been loaded and which
         // shouldn't be added to the document are being hidden.
         $loadedRelations = array_keys($this->relations);
-        $hiddenRelations = array_diff($loadedRelations, $this->indexRelations);
+
+        (isset($this->indexRelations)? $hiddenRelations = array_diff($loadedRelations, $this->indexRelations):$hiddenRelations =&$loadedRelations);
 
         if (empty($hiddenRelations)) {
             return;
@@ -226,7 +218,6 @@ trait IndexedModel
         $visible = $this->getVisible();
         if (count($visible) > 0) {
             $this->setVisible(array_diff($visible, $hiddenRelations));
-
             return;
         }
 
@@ -244,9 +235,11 @@ trait IndexedModel
         // Do not load any index relations if the indicating property is null on
         // the model instance. This does give subclasses the opportunity to disable
         // this functionality without having to override the method.
-        if (! empty($this->indexRelations)) {
+        if (! empty($this->indexRelations) && isset($this->indexRelations)) {
             // Don't load already loaded relations
             $this->load(array_diff($this->indexRelations, array_keys($this->relations)));
+        } else {
+            $this->load(array_keys($this->relations));
         }
     }
 
